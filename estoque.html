@@ -4,9 +4,13 @@
 
 <script>
 db.collection("estoque").get().then(snapshot => {
+    const lista = document.getElementById("listaEstoque");
+
     snapshot.forEach(doc => {
         const item = doc.data();
-        console.log(item);
+        lista.innerHTML += `
+            <li>${item.item} — R$ ${item.preco.toFixed(2)}</li>
+        `;
     });
 });
 </script>
