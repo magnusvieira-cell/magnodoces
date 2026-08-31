@@ -1,110 +1,20 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Início • MagnoDoces</title>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="firebase.js"></script>
 
-    <link rel="stylesheet" href="style.css">
-</head>
+<script>
+auth.onAuthStateChanged(user => {
+    if (user) {
+        window.location.href = "dashboard.html";
+    }
+});
 
-<body>
+function login() {
+    const email = document.getElementById("email").value;
+    const senha = document.getElementById("senha").value;
 
-    <!-- ===== SIDEBAR ===== -->
-    <div class="sidebar">
-        <h2>MagnoDoces</h2>
-
-        <a href="index.html">🏠 Início</a>
-        <a href="dashboard.html">📊 Dashboard</a>
-        <a href="producao.html">🍰 Produção</a>
-        <a href="pedidos.html">🧾 Pedidos</a>
-        <a href="estoque.html">📦 Estoque</a>
-        <a href="financeiro.html">💰 Financeiro</a>
-        <a href="receitas.html">📚 Receitas</a>
-        <a href="vendas.html">🛒 Vendas</a>
-    </div>
-
-    <!-- ===== CONTEÚDO ===== -->
-    <div class="content">
-
-        <div class="card">
-            <h3>Bem-vindo ao MagnoDoces</h3>
-            <p>Seu painel inicial com visão geral do sistema.</p>
-        </div>
-
-        <!-- ===== GRID DE INDICADORES ===== -->
-        <div class="dashboard-grid">
-
-            <div class="dash-card" onclick="window.location.href='pedidos.html'">
-                <h4>Pedidos do Dia</h4>
-                <p>Total de pedidos registrados hoje</p>
-                <div class="dash-number" id="pedidosDia">0</div>
-            </div>
-
-            <div class="dash-card" onclick="window.location.href='producao.html'">
-                <h4>Em Produção</h4>
-                <p>Itens atualmente em produção</p>
-                <div class="dash-number" id="producaoAtiva">0</div>
-            </div>
-
-            <div class="dash-card" onclick="window.location.href='estoque.html'">
-                <h4>Estoque Baixo</h4>
-                <p>Itens que precisam reposição</p>
-                <div class="dash-number" id="estoqueBaixo">0</div>
-            </div>
-
-            <div class="dash-card" onclick="window.location.href='financeiro.html'">
-                <h4>Lucro do Dia</h4>
-                <p>Total financeiro do dia</p>
-                <div class="dash-number" id="lucroDia">R$ 0,00</div>
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- ===== FIREBASE ===== -->
-    <script src="firebase.js"></script>
-    <script src="auth.js"></script>
-
-    <script>
-        // ===== PEDIDOS DO DIA =====
-        firebase.firestore().collection("pedidos")
-            .where("data", "==", new Date().toLocaleDateString())
-            .onSnapshot(snapshot => {
-                document.getElementById("pedidosDia").innerText = snapshot.size;
-            });
-
-        // ===== PRODUÇÃO ATIVA =====
-        firebase.firestore().collection("producao")
-            .where("status", "==", "producao")
-            .onSnapshot(snapshot => {
-                document.getElementById("producaoAtiva").innerText = snapshot.size;
-            });
-
-        // ===== ESTOQUE BAIXO =====
-        firebase.firestore().collection("estoque")
-            .onSnapshot(snapshot => {
-                let baixo = 0;
-                snapshot.forEach(doc => {
-                    const e = doc.data();
-                    if (e.quantidade <= e.minimo) baixo++;
-                });
-                document.getElementById("estoqueBaixo").innerText = baixo;
-            });
-
-        // ===== LUCRO DO DIA =====
-        firebase.firestore().collection("financeiro")
-            .where("data", "==", new Date().toLocaleDateString())
-            .onSnapshot(snapshot => {
-                let lucro = 0;
-                snapshot.forEach(doc => {
-                    const f = doc.data();
-                    lucro += f.tipo === "receita" ? f.valor : -f.valor;
-                });
-                document.getElementById("lucroDia").innerText = "R$ " + lucro.toFixed(2);
-            });
-    </script>
-
-</body>
-</html>
+    auth.signInWithEmailAndPassword(email, senha)
+        .then(() => window.location.href = "dashboard.html")
+        .catch(err => alert("Erro: " + err.message));
+}
+</script>
