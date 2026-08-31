@@ -1,0 +1,26 @@
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<script src="firebase.js"></script>
+
+<script>
+db.collection("pedidos").where("status", "==", "novo").get().then(snapshot => {
+    const lista = document.getElementById("listaProducao");
+
+    snapshot.forEach(doc => {
+        const p = doc.data();
+        lista.innerHTML += `
+            <div class="producao-card">
+                <h4>${p.cliente}</h4>
+                <p>${p.produto} — ${p.quantidade}</p>
+                <button onclick="finalizar('${doc.id}')">Finalizar</button>
+            </div>
+        `;
+    });
+});
+
+function finalizar(id) {
+    db.collection("pedidos").doc(id).update({
+        status: "finalizado"
+    }).then(() => location.reload());
+}
+</script>
