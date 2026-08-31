@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Ficha Técnica - PDF</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #f7f7f7;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        select, button {
+            padding: 10px;
+            font-size: 18px;
+            margin: 10px 0;
+            width: 100%;
+            border-radius: 8px;
+        }
+
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        .box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #4CAF50;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Ficha Técnica</h1>
+
+<select id="receita"></select>
+
+<button onclick="gerarPDF()">Gerar PDF</button>
+
+<div id="info" class="box"></div>
+
+<script type="module">
+import "./auth.js";
+import { auth, db } from "./firebase.js";
+import { 
+    collection, getDocs, doc, getDoc 
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// GARANTIR QUE SOMENTE ADMIN ACESSA
+async function verificarPermissao() {
+    const user = auth.currentUser;
+    const userDoc = await getDoc(doc(db, "users", user.uid));
+
+    if (userDoc.data().role !== "admin") {
+        alert("Acesso negado! Somente administradores.");
+        window.location.href = "index.html";
+    }
+}
+
+verificarPermissao();
+
+// CARREGAR RECEITAS
+async function carregarReceitas() {
+    const select = document.getElementById("receita");
+    const snap = await getDocs(collection(db, "receitas"));
+
+    snap.forEach(docItem => {
+        const r = docItem.data();
+        select.innerHTML += `<option value="${docItem.id}">${r.nome}</option>`;
+    });
+}
+
+carregarReceitas();
+
+// GERAR PDF
+window.gerarPDF = async function() {
+    const id = document.getElementById("receita").value;
+    const receitaDoc = await getDoc(doc(db, "receitas", id));
+    const receita = receitaDoc.data();
+
+    let custoTotal = 0;
+    let textoIngredientes = "";
+
+    for (const item of receita.ingredientes) {
+        const ingDoc = await getDoc(doc(db, "estoque", item.id));
+        const ing = ingDoc.data();
+
+        const custo = ing.preco * item.quantidade;
+        custoTotal += custo;
+
+        textoIngredientes += `
+Ingrediente: ${ing.nome}
+Quantidade: ${item.quantidade}
+Custo: R$ ${custo.toFixed(2)}
+
+`;
+    }
+
+    const custoUnitario = custoTotal / receita.rendimento;
+
+    // MOSTRAR NA TELA
+    document.getElementById("info").innerHTML = `
+        <h2>${receita.nome}</h2>
+        <p><b>Custo Total:</b> R$ ${custoTotal.toFixed(2)}</p>
+        <p><b>Custo Unitário:</b> R$ ${custoUnitario.toFixed(2)}</p>
+        <p><b>Rendimento:</b> ${receita.rendimento} unidades</p>
+        <h3>Ingredientes:</h3>
+        <pre>${textoIngredientes}</pre>
+    `;
+
+    // GERAR PDF (simples, sem biblioteca externa)
+    const conteudo = `
+Ficha Técnica - ${receita.nome}
+
+Custo Total: R$ ${custoTotal.toFixed(2)}
+Custo Unitário: R$ ${custoUnitario.toFixed(2)}
+Rendimento: ${receita.rendimento} unidades
+
+Ingredientes:
+${textoIngredientes}
+    `;
+
+    const blob = new Blob([conteudo], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `Ficha_Tecnica_${receita.nome}.pdf`;
+    a.click();
+};
+</script>
+
+</body>
+</html>

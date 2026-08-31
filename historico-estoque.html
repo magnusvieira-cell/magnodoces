@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Histórico de Movimentações</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #f7f7f7;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #4CAF50;
+            color: white;
+        }
+
+        tr:hover {
+            background: #f1f1f1;
+        }
+
+        select, input {
+            padding: 10px;
+            margin: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Histórico de Movimentações</h1>
+
+<!-- FILTROS -->
+<select id="filtroItem"></select>
+<select id="filtroTipo">
+    <option value="">Todos os tipos</option>
+    <option value="entrada">Entrada</option>
+    <option value="saida">Saída</option>
+</select>
+
+<input type="date" id="filtroData">
+
+<button onclick="carregarHistorico()">Filtrar</button>
+
+<table>
+    <thead>
+        <tr>
+            <th>Data</th>
+            <th>Item</th>
+            <th>Tipo</th>
+            <th>Quantidade</th>
+            <th>Unidade</th>
+            <th>Custo Unitário</th>
+        </tr>
+    </thead>
+    <tbody id="lista"></tbody>
+</table>
+
+<script type="module">
+import "./auth.js";
+import { auth, db } from "./firebase.js";
+import { 
+    collection, getDocs, doc, getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// PERMISSÃO
+async function verificarPermissao() {
+    const user = auth.currentUser;
+    const userDoc = await getDoc(doc(db, "users", user.uid));
+
+    if (userDoc.data().role !== "admin") {
+        alert("Acesso negado!");
+        window.location.href = "index.html";
+    }
+}
+
+verificarPermissao();
+
+// CARREGAR ITENS NO FILTRO
+async function carregarItens() {
+    const select = document.getElementById("filtroItem");
+    select.innerHTML = `<option value="">Todos os itens</option>`;
+
+    const snap = await getDocs(collection(db, "estoque"));
+
+    let nomes = new Set();
+
+    snap.forEach(docItem => {
+        nomes.add(docItem.data().nome);
+    });
+
+    nomes.forEach(nome => {
+        select.innerHTML += `<option value="${nome}">${nome}</option>`;
+    });
+}
+
+carregarItens();
+
+// CARREGAR HISTÓRICO
+async function carregarHistorico() {
+    const lista = document.getElementById("lista");
+    lista.innerHTML = "";
+
+    const filtroItem = document.getElementById("filtroItem").value;
+    const filtroTipo = document.getElementById("filtroTipo").value;
+    const filtroData = document.getElementById("filtroData").value;
+
+    const snap = await getDocs(collection(db, "estoque"));
+
+    snap.forEach(docItem => {
+        const e = docItem.data();
+
+        // Só mostra itens que têm tipo (entrada/saida)
+        if (!e.tipo) return;
+
+        // Filtros
+        if (filtroItem && e.nome !== filtroItem) return;
+        if (filtroTipo && e.tipo !== filtroTipo) return;
+        if (filtroData && e.data !== filtroData) return;
+
+        lista.innerHTML += `
+            <tr>
+                <td>${e.data}</td>
+                <td>${e.nome}</td>
+                <td>${e.tipo}</td>
+                <td>${e.quantidade}</td>
+                <td>${e.unidade}</td>
+                <td>R$ ${e.custoUnitario.toFixed(2)}</td>
+            </tr>
+        `;
+    });
+}
+
+carregarHistorico();
+</script>
+
+</body>
+</html>

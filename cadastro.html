@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Criar Conta - Cliente</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #f7f7f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .box {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 350px;
+            text-align: center;
+            border: 2px solid #4CAF50;
+        }
+
+        input {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            width: 95%;
+            padding: 12px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2>Criar Conta de Cliente</h2>
+
+    <input id="email" type="email" placeholder="E-mail">
+    <input id="senha" type="password" placeholder="Senha">
+
+    <input id="celular" type="text" placeholder="Celular com DDD (ex: 47 99999-9999)">
+
+    <button onclick="criarConta()">Cadastrar</button>
+</div>
+
+<script type="module">
+import { auth, db } from "./firebase.js";
+import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { setDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+window.criarConta = function() {
+    const email = document.getElementById("email").value;
+    const senha = document.getElementById("senha").value;
+    const celular = document.getElementById("celular").value;
+
+    if (!celular.match(/^\d{2}\s?\d{4,5}-?\d{4}$/)) {
+        alert("Número de celular inválido! Use o formato: 47 99999-9999");
+        return;
+    }
+
+    createUserWithEmailAndPassword(auth, email, senha)
+        .then(async (cred) => {
+            await setDoc(doc(db, "users", cred.user.uid), {
+                email,
+                celular,
+                role: "cliente"
+            });
+
+            alert("Conta criada com sucesso!");
+            window.location.href = "login.html";
+        })
+        .catch(() => {
+            alert("Erro ao criar conta!");
+        });
+};
+</script>
+
+</body>
+</html>

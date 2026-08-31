@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Pedidos - Administração</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #f7f7f7;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .pedido-box {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border: 2px solid #4CAF50;
+        }
+
+        .status {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 8px 12px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .aprovar {
+            background: #2196F3;
+            color: white;
+        }
+
+        .rejeitar {
+            background: #F44336;
+            color: white;
+        }
+
+        .entregar {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .produzir {
+            background: #FF9800;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Pedidos dos Clientes</h1>
+
+<div id="lista"></div>
+
+<script type="module">
+import "./auth.js";
+import { auth, db } from "./firebase.js";
+import { 
+    collection, getDocs, doc, updateDoc 
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// GARANTIR QUE SOMENTE ADMIN ACESSA
+async function verificarPermissao() {
+    const user = auth.currentUser;
+    const userDoc = await getDoc(doc(db, "users", user.uid));
+
+    if (userDoc.data().role !== "admin") {
+        alert("Acesso negado! Somente administradores.");
+        window.location.href = "index.html";
+    }
+}
+
+verificarPermissao();
+
+// LISTAR PEDIDOS
+async function carregarPedidos() {
+    const lista = document.getElementById("lista");
+    lista.innerHTML = "";
+
+    const snap = await getDocs(collection(db, "pedidos"));
+
+    snap.forEach(docItem => {
+        const p = docItem.data();
+        const id = docItem.id;
+
+        lista.innerHTML += `
+            <div class="pedido-box">
+                <b>Produto:</b> ${p.produto}<br>
+                <b>Quantidade:</b> ${p.quantidade}<br>
+                <b>Cliente:</b> ${p.userId}<br>
+                <b>Data:</b> ${p.data}<br>
+                <b>Status:</b> <span class="status">${p.status || "Pendente"}</span><br>
+
+                <button class="aprovar" onclick="aprovar('${id}')">Aprovar</button>
+                <button class="rejeitar" onclick="rejeitar('${id}')">Rejeitar</button>
+                <button class="entregar" onclick="entregar('${id}')">Entregar</button>
+                <button class="produzir" onclick="produzir('${id}')">Enviar para Produção</button>
+            </div>
+        `;
+    });
+}
+
+carregarPedidos();
+
+// APROVAR
+window.aprovar = async function(id) {
+    await updateDoc(doc(db, "pedidos", id), {
+        status: "Aprovado"
+    });
+
+    alert("Pedido aprovado!");
+    carregarPedidos();
+};
+
+// REJEITAR
+window.rejeitar = async function(id) {
+    await updateDoc(doc(db, "pedidos", id), {
+        status: "Rejeitado"
+    });
+
+    alert("Pedido rejeitado!");
+    carregarPedidos();
+};
+
+// ENTREGAR
+window.entregar = async function(id) {
+    await updateDoc(doc(db, "pedidos", id), {
+        status: "Entregue"
+    });
+
+    alert("Pedido marcado como entregue!");
+    carregarPedidos();
+};
+
+// ENVIAR PARA PRODUÇÃO (MÓDULO 3)
+window.produzir = async function(id) {
+    await updateDoc(doc(db, "pedidos", id), {
+        status: "Em produção"
+    });
+
+    alert("Pedido enviado para produção!");
+    carregarPedidos();
+};
+</script>
+
+</body>
+</html>
