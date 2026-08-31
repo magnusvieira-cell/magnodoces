@@ -3,10 +3,17 @@
 <script src="firebase.js"></script>
 
 <script>
-db.collection("estoque").get().then(snapshot => {
-    snapshot.forEach(doc => {
-        const item = doc.data();
-        console.log(item);
+function salvarItem() {
+    const nome = document.getElementById("nome").value;
+    const preco = Number(document.getElementById("preco").value);
+
+    db.collection("estoque").add({
+        item: nome,
+        preco: preco,
+        data: new Date().toLocaleDateString()
+    }).then(() => {
+        alert("Item salvo!");
+        window.location.href = "estoque.html";
     });
-});
+}
 </script>
