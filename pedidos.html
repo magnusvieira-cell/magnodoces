@@ -1,0 +1,20 @@
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<script src="firebase.js"></script>
+
+<script>
+db.collection("pedidos").orderBy("data", "desc").get().then(snapshot => {
+    const lista = document.getElementById("listaPedidos");
+
+    snapshot.forEach(doc => {
+        const p = doc.data();
+        lista.innerHTML += `
+            <div class="pedido-card">
+                <h4>${p.cliente}</h4>
+                <p>${p.produto} — ${p.quantidade} un</p>
+                <p>${p.data}</p>
+            </div>
+        `;
+    });
+});
+</script>
