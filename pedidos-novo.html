@@ -1,130 +1,22 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pedidos • MagnoDoces</title>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<script src="firebase.js"></script>
 
-    <link rel="stylesheet" href="style.css">
+<script>
+function salvarPedido() {
+    const cliente = document.getElementById("cliente").value;
+    const produto = document.getElementById("produto").value;
+    const quantidade = Number(document.getElementById("quantidade").value);
 
-    <style>
-        /* ===== TABELA PROFISSIONAL ===== */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: #fff;
-            border-radius: 14px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-
-        th, td {
-            padding: 14px;
-            text-align: left;
-            border-bottom: 1px solid #eee;
-        }
-
-        th {
-            background: #f3f4f6;
-            font-weight: 600;
-            color: #444;
-        }
-
-        tr:hover {
-            background: #f9fafb;
-        }
-
-        /* ===== STATUS ===== */
-        .status {
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            display: inline-block;
-        }
-
-        .pendente { background: #fef3c7; color: #b45309; }
-        .produzindo { background: #dbeafe; color: #1e40af; }
-        .finalizado { background: #dcfce7; color: #166534; }
-
-        /* ===== BOTÕES ===== */
-        .btn {
-            padding: 10px 16px;
-            border-radius: 10px;
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
-            transition: 0.2s;
-        }
-
-        .btn-edit { background: #4f46e5; color: #fff; }
-        .btn-edit:hover { background: #4338ca; }
-
-        .btn-delete { background: #ef4444; color: #fff; }
-        .btn-delete:hover { background: #dc2626; }
-
-        .btn-new {
-            background: #10b981;
-            color: #fff;
-            margin-bottom: 20px;
-        }
-
-        .btn-new:hover {
-            background: #059669;
-        }
-    </style>
-</head>
-
-<body>
-
-    <!-- ===== SIDEBAR ===== -->
-    <div class="sidebar">
-        <h2>MagnoDoces</h2>
-
-        <a href="dashboard.html">📊 Dashboard</a>
-        <a href="producao.html">🍰 Produção</a>
-        <a href="pedidos.html">🧾 Pedidos</a>
-        <a href="estoque.html">📦 Estoque</a>
-        <a href="financeiro.html">💰 Financeiro</a>
-        <a href="receitas.html">📚 Receitas</a>
-        <a href="vendas.html">🛒 Vendas</a>
-    </div>
-
-    <!-- ===== CONTEÚDO ===== -->
-    <div class="content">
-
-        <div class="card">
-            <h3>Pedidos</h3>
-            <p>Gerencie todos os pedidos do sistema.</p>
-
-            <button class="btn btn-new" onclick="novoPedido()">➕ Novo Pedido</button>
-        </div>
-
-        <div class="card">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Cliente</th>
-                        <th>Produto</th>
-                        <th>Quantidade</th>
-                        <th>Data</th>
-                        <th>Status</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-
-                <tbody id="listaPedidos">
-                    <!-- Os pedidos serão carregados aqui via Firebase -->
-                </tbody>
-            </table>
-        </div>
-
-    </div>
-
-    <!-- ===== FIREBASE ===== -->
-    <script src="firebase.js"></script>
-    <script src="auth.js"></script>
-
-    <script>
-        // ===== CARREGAR PEDIDOS DO FIREBASE =====
-        firebase.firestore().collection("pedidos").orderBy("data", "desc
+    db.collection("pedidos").add({
+        cliente,
+        produto,
+        quantidade,
+        data: new Date().toLocaleDateString(),
+        status: "novo"
+    }).then(() => {
+        alert("Pedido salvo!");
+        window.location.href = "pedidos.html";
+    });
+}
+</script>
