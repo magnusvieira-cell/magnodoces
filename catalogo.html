@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo • MagnoDoces</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        body {
+            background: #F7FAF8;
+        }
+
+        .catalogo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .produto-card {
+            background: #FFFFFF;
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-left: 6px solid #A8E6CF;
+            padding: 15px;
+        }
+
+        .produto-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .produto-card h4 {
+            margin-top: 10px;
+            color: #8B6F47;
+        }
+
+        .produto-card p {
+            color: #8B6F47;
+            font-size: 15px;
+        }
+
+        .btn-add {
+            width: 100%;
+            padding: 12px;
+            background: #A8E6CF;
+            color: #8B6F47;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-add:hover {
+            background: #B3CDE0;
+        }
+
+        .carrinho-box {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 320px;
+            height: 100%;
+            background: #FFFFFF;
+            box-shadow: -4px 0 12px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+
+        .carrinho-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #EEE;
+            color: #8B6F47;
+        }
+
+        .btn-finalizar {
+            width: 100%;
+            padding: 14px;
+            background: #A8E6CF;
+            color: #8B6F47;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="catalogo-grid" id="catalogo"></div>
+
+    <div class="carrinho-box">
+        <h3 style="color:#8B6F47;">Carrinho</h3>
+
+        <div id="carrinho"></div>
+
+        <button class="btn-finalizar" onclick="finalizarPedido()">Finalizar Pedido</button>
+    </div>
+
+    <script src="firebase.js"></script>
+
+    <script>
+        let carrinho = [];
+
+        // LISTA DE PRODUTOS (VOCÊ VAI EDITAR AQUI)
+        const produtos = [
+            {
+                nome: "Bolo de Pote Chocolate",
+                preco: 12.00,
+                descricao: "Chocolate belga com creme especial.",
+                foto: "img/bolo-chocolate.jpg"
+            },
+            {
+                nome: "Bolo de Pote Ninho",
+                preco: 12.00,
+                descricao: "Creme de leite ninho com morangos.",
+                foto: "img/bolo-ninho.jpg"
+            },
+            {
+                nome: "Brownie Tradicional",
+                preco: 8.00,
+                descricao: "Brownie artesanal com chocolate 70%.",
+                foto: "img/brownie.jpg"
+            }
+        ];
+
+        // CARREGAR CATÁLOGO
+        const catalogo = document.getElementById("catalogo");
+
+        produtos.forEach(p => {
+            catalogo.innerHTML += `
+                <div class="produto-card">
+                    <img src="${p.foto}">
+                    <h4>${p.nome}</h4>
+                    <p>${p.descricao}</p>
+                    <p><strong>R$ ${p.preco.toFixed(2)}</strong></p>
+                    <button class="btn-add" onclick="addCarrinho('${p.nome}', ${p.preco})">Adicionar</button>
+                </div>
+            `;
+        });
+
+        function addCarrinho(nome, preco) {
+            carrinho.push({ nome, preco });
+
+            atualizarCarrinho();
+        }
+
+        function atualizarCarrinho() {
+            const box = document.getElementById("carrinho");
+            box.innerHTML = "";
+
+            carrinho.forEach(item => {
+                box.innerHTML += `
+                    <div class="carrinho-item">
+                        <span>${item.nome}</span>
+                        <span>R$ ${item.preco.toFixed(2)}</span>
+                    </div>
+                `;
+            });
+        }
+
+        function finalizarPedido() {
+            if (carrinho.length === 0) {
+                alert("Carrinho vazio.");
+                return;
+            }
+
+            const pedido = {
+                itens: carrinho,
+                data: new Date().toLocaleDateString(),
+                status: "novo"
+            };
+
+            firebase.firestore().collection("pedidos").add(pedido);
+
+            let texto = "Olá! Quero fazer um pedido:%0A%0A";
+
+            carrinho.forEach(i => {
+                texto += `• ${i.nome} - R$ ${i.preco.toFixed(2)}%0A`;
+            });
+
+            const link = `https://wa.me/5547999999999?text=${texto}`;
+
+            window.location.href = link;
+        }
+    </script>
+
+</body>
+</html>
