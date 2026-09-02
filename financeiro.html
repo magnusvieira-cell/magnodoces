@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Financeiro • MagnoDoces</title>
-<link rel="stylesheet" href="style.css?v=20">
+<link rel="stylesheet" href="style.css?v=100">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
@@ -12,90 +12,139 @@
 <div class="sidebar">
     <h2 class="logo">MagnoDoces</h2>
 
-    <a href="dashboard.html?v=20" class="item"><span class="material-icons">dashboard</span> Dashboard</a>
-    <a href="estoque.html?v=20" class="item"><span class="material-icons">inventory_2</span> Estoque</a>
-    <a href="pedidos.html?v=20" class="item"><span class="material-icons">shopping_cart</span> Pedidos</a>
-    <a href="producao.html?v=20" class="item"><span class="material-icons">factory</span> Produção</a>
-    <a href="financeiro.html?v=20" class="item"><span class="material-icons">attach_money</span> Financeiro</a>
-    <a href="catalogo.html?v=20" class="item"><span class="material-icons">storefront</span> Catálogo</a>
-    <a href="index.html?v=20" class="item logout"><span class="material-icons">logout</span> Sair</a>
+    <a href="dashboard.html?v=100" class="item"><span class="material-icons">dashboard</span> Dashboard</a>
+    <a href="estoque.html?v=100" class="item"><span class="material-icons">inventory_2</span> Estoque</a>
+    <a href="ingrediente-novo.html?v=100" class="item"><span class="material-icons">add</span> Novo Ingrediente</a>
+    <a href="produtos-finais.html?v=100" class="item"><span class="material-icons">cake</span> Produtos Finais</a>
+    <a href="pedido-novo.html?v=100" class="item"><span class="material-icons">shopping_cart</span> Novo Pedido</a>
+    <a href="pedidos.html?v=100" class="item"><span class="material-icons">list_alt</span> Pedidos</a>
+    <a href="producao.html?v=100" class="item"><span class="material-icons">factory</span> Produção</a>
+    <a href="financeiro.html?v=100" class="item"><span class="material-icons">attach_money</span> Financeiro</a>
+    <a href="catalogo.html?v=100" class="item"><span class="material-icons">storefront</span> Catálogo</a>
+    <a href="index.html?v=100" class="item logout"><span class="material-icons">logout</span> Sair</a>
 </div>
 
 <div class="content">
     <h1>Financeiro</h1>
 
-    <div class="cards">
-        <div class="card">
-            <span class="material-icons icon">trending_up</span>
-            <h3>Receitas</h3>
-            <p>Total: R$ <b id="totalReceitas">0,00</b></p>
-        </div>
-
-        <div class="card">
-            <span class="material-icons icon">trending_down</span>
-            <h3>Despesas</h3>
-            <p>Total: R$ <b id="totalDespesas">0,00</b></p>
-        </div>
-
-        <div class="card">
-            <span class="material-icons icon">account_balance</span>
-            <h3>Saldo</h3>
-            <p>R$ <b id="saldoFinal">0,00</b></p>
-        </div>
+    <div class="card">
+        <h3>Resumo Geral</h3>
+        <p><b>Receita Total:</b> R$ <span id="receitaTotal">0.00</span></p>
+        <p><b>Custo Total:</b> R$ <span id="custoTotal">0.00</span></p>
+        <p><b>Lucro Total:</b> R$ <span id="lucroTotal">0.00</span></p>
     </div>
 
-    <h2>Movimentações</h2>
+    <div class="card">
+        <h3>Movimentações Financeiras</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Tipo</th>
+                    <th>Receita</th>
+                    <th>Custo</th>
+                    <th>Lucro</th>
+                </tr>
+            </thead>
+            <tbody id="listaFinanceiro"></tbody>
+        </table>
+    </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Tipo</th>
-                <th>Descrição</th>
-                <th>Valor</th>
-                <th>Data</th>
-            </tr>
-        </thead>
-        <tbody id="listaFinanceiro"></tbody>
-    </table>
+    <div class="card">
+        <h3>Relatório Mensal</h3>
+        <select id="mesSelect" onchange="filtrarMes()">
+            <option value="">Selecione o mês</option>
+            <option value="01">Janeiro</option>
+            <option value="02">Fevereiro</option>
+            <option value="03">Março</option>
+            <option value="04">Abril</option>
+            <option value="05">Maio</option>
+            <option value="06">Junho</option>
+            <option value="07">Julho</option>
+            <option value="08">Agosto</option>
+            <option value="09">Setembro</option>
+            <option value="10">Outubro</option>
+            <option value="11">Novembro</option>
+            <option value="12">Dezembro</option>
+        </select>
+
+        <p><b>Receita:</b> R$ <span id="mesReceita">0.00</span></p>
+        <p><b>Custo:</b> R$ <span id="mesCusto">0.00</span></p>
+        <p><b>Lucro:</b> R$ <span id="mesLucro">0.00</span></p>
+    </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-<script src="firebase.js?v=20"></script>
+<script src="firebase.js?v=100"></script>
 
 <script>
 auth.onAuthStateChanged(user => {
-    if (!user) window.location.href = "index.html?v=20";
+    if (!user) window.location.href = "index.html?v=100";
 });
 
-db.collection("financeiro").onSnapshot(snapshot => {
-    let receitas = 0;
-    let despesas = 0;
+let movimentos = [];
 
-    const lista = document.getElementById("listaFinanceiro");
-    lista.innerHTML = "";
+db.collection("financeiro").orderBy("data", "desc").onSnapshot(snapshot => {
+    movimentos = [];
+    const tbody = document.getElementById("listaFinanceiro");
+    tbody.innerHTML = "";
+
+    let receitaTotal = 0;
+    let custoTotal = 0;
+    let lucroTotal = 0;
 
     snapshot.forEach(doc => {
-        const f = doc.data();
+        const m = doc.data();
+        movimentos.push(m);
 
-        if (f.tipo === "receita") receitas += f.valor;
-        if (f.tipo === "despesa") despesas += f.valor;
+        receitaTotal += m.receita;
+        custoTotal += m.custo;
+        lucroTotal += m.lucro;
 
-        lista.innerHTML += `
+        tbody.innerHTML += `
             <tr>
-                <td>${f.tipo}</td>
-                <td>${f.descricao}</td>
-                <td>R$ ${f.valor.toFixed(2)}</td>
-                <td>${f.data}</td>
+                <td>${m.data}</td>
+                <td>${m.tipo}</td>
+                <td>R$ ${m.receita.toFixed(2)}</td>
+                <td>R$ ${m.custo.toFixed(2)}</td>
+                <td>R$ ${m.lucro.toFixed(2)}</td>
             </tr>
         `;
     });
 
-    document.getElementById("totalReceitas").innerText = receitas.toFixed(2);
-    document.getElementById("totalDespesas").innerText = despesas.toFixed(2);
-    document.getElementById("saldoFinal").innerText = (receitas - despesas).toFixed(2);
+    document.getElementById("receitaTotal").innerText = receitaTotal.toFixed(2);
+    document.getElementById("custoTotal").innerText = custoTotal.toFixed(2);
+    document.getElementById("lucroTotal").innerText = lucroTotal.toFixed(2);
 });
+
+function filtrarMes() {
+    const mes = document.getElementById("mesSelect").value;
+
+    if (!mes) {
+        document.getElementById("mesReceita").innerText = "0.00";
+        document.getElementById("mesCusto").innerText = "0.00";
+        document.getElementById("mesLucro").innerText = "0.00";
+        return;
+    }
+
+    let receita = 0;
+    let custo = 0;
+    let lucro = 0;
+
+    movimentos.forEach(m => {
+        if (m.data.substring(5, 7) === mes) {
+            receita += m.receita;
+            custo += m.custo;
+            lucro += m.lucro;
+        }
+    });
+
+    document.getElementById("mesReceita").innerText = receita.toFixed(2);
+    document.getElementById("mesCusto").innerText = custo.toFixed(2);
+    document.getElementById("mesLucro").innerText = lucro.toFixed(2);
+}
 </script>
 
 </body>
