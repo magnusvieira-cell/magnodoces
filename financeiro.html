@@ -1,3 +1,17 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Financeiro</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h2>Financeiro</h2>
+
+<p id="total">Carregando...</p>
+
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 <script src="firebase.js"></script>
@@ -11,6 +25,9 @@ db.collection("pedidos").get().then(snapshot => {
         total += Number(p.preco || 0);
     });
 
-    document.getElementById("totalFinanceiro").innerText = "R$ " + total.toFixed(2);
+    document.getElementById("total").innerText = "Total: R$ " + total.toFixed(2);
 });
 </script>
+
+</body>
+</html>
