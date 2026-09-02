@@ -1,14 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Login • MagnoDoces</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="card">
+    <h2>Login do Administrador</h2>
+
+    <input id="email" placeholder="Email">
+    <input id="senha" type="password" placeholder="Senha">
+
+    <button onclick="login()">Entrar</button>
+</div>
+
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="firebase.js"></script>
 
 <script>
-auth.onAuthStateChanged(user => {
-    if (user) {
-        window.location.href = "dashboard.html";
-    }
-});
-
 function login() {
     const email = document.getElementById("email").value;
     const senha = document.getElementById("senha").value;
@@ -18,3 +31,6 @@ function login() {
         .catch(err => alert("Erro: " + err.message));
 }
 </script>
+
+</body>
+</html>
