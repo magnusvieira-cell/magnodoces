@@ -1,14 +1,25 @@
+/* ======== PALETA ======== */
+:root {
+    --menta: #8EE5C2;
+    --serenity: #A7C7E7;
+    --marrom: #8B5A2B;
+    --grafite: #1E1E2E;
+    --branco: #F7FAF8;
+}
+
+/* ======== BASE ======== */
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background: #F4F5F7;
+    background: var(--branco);
+    color: var(--marrom);
 }
 
-/* MENU LATERAL */
+/* ======== MENU LATERAL ======== */
 .sidebar {
     width: 240px;
     height: 100vh;
-    background: #1E1E2E;
+    background: var(--grafite);
     color: white;
     position: fixed;
     left: 0;
@@ -21,6 +32,7 @@ body {
     margin-bottom: 30px;
     font-size: 22px;
     font-weight: bold;
+    color: var(--menta);
 }
 
 .sidebar .item {
@@ -36,7 +48,7 @@ body {
 
 .sidebar .item:hover {
     background: #2A2A3A;
-    color: white;
+    color: var(--menta);
 }
 
 .sidebar .logout {
@@ -44,17 +56,17 @@ body {
     color: #FF6B6B;
 }
 
-/* CONTEÚDO */
+/* ======== CONTEÚDO ======== */
 .content {
     margin-left: 260px;
     padding: 30px;
 }
 
-h1 {
-    margin-top: 0;
+h1, h2, h3 {
+    color: var(--marrom);
 }
 
-/* CARDS */
+/* ======== CARDS ======== */
 .cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -66,6 +78,7 @@ h1 {
     background: white;
     padding: 20px;
     border-radius: 12px;
+    border-left: 6px solid var(--menta);
     box-shadow: 0 3px 10px rgba(0,0,0,0.1);
     text-align: center;
     transition: 0.2s;
@@ -73,10 +86,66 @@ h1 {
 
 .card:hover {
     transform: translateY(-4px);
+    border-left-color: var(--serenity);
 }
 
 .card .icon {
     font-size: 40px;
-    color: #4CAF50;
+    color: var(--serenity);
     margin-bottom: 10px;
+}
+
+/* ======== BOTÕES ======== */
+button {
+    background: var(--menta);
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    color: var(--grafite);
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: var(--serenity);
+}
+
+/* ======== INPUTS ======== */
+input, select {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--serenity);
+    outline: none;
+    color: var(--grafite);
+}
+
+input:focus {
+    border-color: var(--menta);
+}
+
+/* ======== TABELAS ======== */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table th {
+    background: var(--serenity);
+    color: var(--grafite);
+    padding: 12px;
+}
+
+table td {
+    background: white;
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+tr:hover td {
+    background: var(--menta);
+    color: var(--grafite);
 }
