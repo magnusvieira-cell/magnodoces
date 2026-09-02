@@ -2,32 +2,83 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Finalizar Pedido</title>
-<link rel="stylesheet" href="style.css">
+<title>Pedidos • MagnoDoces</title>
+<link rel="stylesheet" href="style.css?v=20">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
 <body>
 
-<h2>Finalizar Pedido</h2>
+<div class="sidebar">
+    <h2 class="logo">MagnoDoces</h2>
 
-<input id="cliente" placeholder="Seu nome">
-<input id="whatsapp" placeholder="WhatsApp">
+    <a href="dashboard.html?v=20" class="item"><span class="material-icons">dashboard</span> Dashboard</a>
+    <a href="estoque.html?v=20" class="item"><span class="material-icons">inventory_2</span> Estoque</a>
+    <a href="pedidos.html?v=20" class="item"><span class="material-icons">shopping_cart</span> Pedidos</a>
+    <a href="producao.html?v=20" class="item"><span class="material-icons">factory</span> Produção</a>
+    <a href="financeiro.html?v=20" class="item"><span class="material-icons">attach_money</span> Financeiro</a>
+    <a href="catalogo.html?v=20" class="item"><span class="material-icons">storefront</span> Catálogo</a>
+    <a href="index.html?v=20" class="item logout"><span class="material-icons">logout</span> Sair</a>
+</div>
 
-<button onclick="enviar()">Enviar</button>
+<div class="content">
+    <h1>Pedidos</h1>
+
+    <button onclick="window.location.href='pedido-novo.html?v=20'">Novo Pedido</button>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Cliente</th>
+                <th>Data</th>
+                <th>Status</th>
+                <th>Total</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody id="listaPedidos"></tbody>
+    </table>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-<script src="firebase.js"></script>
+<script src="firebase.js?v=20"></script>
 
 <script>
-function enviar() {
-    const cliente = document.getElementById("cliente").value;
-    const whatsapp = document.getElementById("whatsapp").value;
+auth.onAuthStateChanged(user => {
+    if (!user) window.location.href = "index.html?v=20";
+});
 
-    db.collection("pedidos").add({ cliente, whatsapp });
+db.collection("pedidos").onSnapshot(snapshot => {
+    const lista = document.getElementById("listaPedidos");
+    lista.innerHTML = "";
 
-    window.location.href =
-        `https://wa.me/5547999999999?text=Olá, meu nome é ${cliente} e meu WhatsApp é ${whatsapp}`;
+    snapshot.forEach(doc => {
+        const p = doc.data();
+        lista.innerHTML += `
+            <tr>
+                <td>${p.cliente}</td>
+                <td>${p.data}</td>
+                <td>${p.status}</td>
+                <td>R$ ${p.total.toFixed(2)}</td>
+                <td>
+                    <button onclick="ver('${doc.id}')">Ver</button>
+                    <button onclick="remover('${doc.id}')">Excluir</button>
+                </td>
+            </tr>
+        `;
+    });
+});
+
+function ver(id) {
+    window.location.href = "pedido.html?id=" + id;
+}
+
+function remover(id) {
+    if (confirm("Excluir pedido?")) {
+        db.collection("pedidos").doc(id).delete();
+    }
 }
 </script>
 
