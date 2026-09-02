@@ -2,30 +2,33 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Pedidos</title>
+<title>Finalizar Pedido</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<h2>Pedidos</h2>
-<a href="pedido-novo.html">Novo Pedido</a>
+<h2>Finalizar Pedido</h2>
 
-<ul id="lista"></ul>
+<input id="cliente" placeholder="Seu nome">
+<input id="whatsapp" placeholder="WhatsApp">
+
+<button onclick="enviar()">Enviar</button>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 <script src="firebase.js"></script>
 
 <script>
-db.collection("pedidos").get().then(snapshot => {
-    const lista = document.getElementById("lista");
+function enviar() {
+    const cliente = document.getElementById("cliente").value;
+    const whatsapp = document.getElementById("whatsapp").value;
 
-    snapshot.forEach(doc => {
-        const p = doc.data();
-        lista.innerHTML += `<li>${p.cliente} — ${p.produto} (${p.quantidade})</li>`;
-    });
-});
+    db.collection("pedidos").add({ cliente, whatsapp });
+
+    window.location.href =
+        `https://wa.me/5547999999999?text=Olá, meu nome é ${cliente} e meu WhatsApp é ${whatsapp}`;
+}
 </script>
 
 </body>
