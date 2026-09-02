@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Catálogo • MagnoDoces</title>
+<link rel="stylesheet" href="style.css?v=200">
+</head>
+
+<body>
+
+<h1 style="text-align:center;">Catálogo MagnoDoces</h1>
+
+<div id="listaCatalogo" class="cards"></div>
+
+<button onclick="irCarrinho()" style="position:fixed; bottom:20px; right:20px; padding:15px 25px; background:#4CAF50; color:white; border:none; border-radius:10px; font-size:18px;">
+    Ver Carrinho
+</button>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+<script>
+// CONFIGURAÇÃO DO FIREBASE (mesma do firebase.js)
+var firebaseConfig = {
+    apiKey: "SUA_API_KEY",
+    authDomain: "SEU_AUTH_DOMAIN",
+    projectId: "SEU_PROJECT_ID",
+    storageBucket: "SEU_STORAGE_BUCKET",
+    messagingSenderId: "SEU_SENDER_ID",
+    appId: "SEU_APP_ID"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+let carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
+
+db.collection("produtosFinais").onSnapshot(snapshot => {
+    const area = document.getElementById("listaCatalogo");
+    area.innerHTML = "";
+
+    snapshot.forEach(doc => {
+        const p = doc.data();
+
+        area.innerHTML += `
+            <div class="card">
+                <img src="${p.imagem}" style="width:100%; border-radius:10px;">
+                <h3>${p.nome}</h3>
+                <p>${p.descricao}</p>
+                <p><b>Preço:</b> R$ ${p.preco.toFixed(2)}</p>
+
+                <button onclick="addCarrinho('${doc.id}', '${p.nome}', ${p.preco})">
+                    Adicionar ao Pedido
+                </button>
+            </div>
+        `;
+    });
+});
+
+function addCarrinho(id, nome, preco) {
+    carrinho.push({ id, nome, preco, qtd: 1 });
+    localStorage.setItem("carrinho", JSON.stringify(carrinho));
+    alert("Produto adicionado ao pedido!");
+}
+
+function irCarrinho() {
+    window.location.href = "cliente-carrinho.html?v=200";
+}
+</script>
+
+</body>
+</html>
