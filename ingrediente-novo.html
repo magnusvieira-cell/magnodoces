@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Novo Ingrediente • MagnoDoces</title>
+<link rel="stylesheet" href="style.css?v=50">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<body>
+
+<div class="sidebar">
+    <h2 class="logo">MagnoDoces</h2>
+
+    <a href="dashboard.html?v=50" class="item"><span class="material-icons">dashboard</span> Dashboard</a>
+    <a href="estoque.html?v=50" class="item"><span class="material-icons">inventory_2</span> Estoque</a>
+    <a href="ingrediente-novo.html?v=50" class="item"><span class="material-icons">add</span> Novo Ingrediente</a>
+    <a href="produtos-finais.html?v=50" class="item"><span class="material-icons">cake</span> Produtos Finais</a>
+    <a href="pedido-novo.html?v=50" class="item"><span class="material-icons">shopping_cart</span> Novo Pedido</a>
+    <a href="producao.html?v=50" class="item"><span class="material-icons">factory</span> Produção</a>
+    <a href="financeiro.html?v=50" class="item"><span class="material-icons">attach_money</span> Financeiro</a>
+    <a href="catalogo.html?v=50" class="item"><span class="material-icons">storefront</span> Catálogo</a>
+    <a href="index.html?v=50" class="item logout"><span class="material-icons">logout</span> Sair</a>
+</div>
+
+<div class="content">
+    <h1>Novo Ingrediente</h1>
+
+    <div class="card">
+        <h3>Informações do Ingrediente</h3>
+
+        <input id="nome" placeholder="Nome do ingrediente (ex: Farinha)">
+        
+        <select id="medida">
+            <option value="g">Gramas (g)</option>
+            <option value="ml">Mililitros (ml)</option>
+            <option value="unidade">Unidade</option>
+        </select>
+
+        <input id="quantidade" type="number" placeholder="Quantidade atual no estoque">
+        <input id="custo" type="number" placeholder="Custo por medida (ex: custo por g, ml ou unidade)">
+        
+        <button onclick="salvarIngrediente()">Salvar Ingrediente</button>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<script src="firebase.js?v=50"></script>
+
+<script>
+auth.onAuthStateChanged(user => {
+    if (!user) window.location.href = "index.html?v=50";
+});
+
+function salvarIngrediente() {
+    const nome = document.getElementById("nome").value;
+    const medida = document.getElementById("medida").value;
+    const quantidade = Number(document.getElementById("quantidade").value);
+    const custo = Number(document.getElementById("custo").value);
+
+    if (!nome || !medida || !quantidade || !custo) {
+        alert("Preencha todos os campos.");
+        return;
+    }
+
+    db.collection("estoque").add({
+        nome,
+        medida,
+        quantidade,
+        custo
+    }).then(() => {
+        alert("Ingrediente cadastrado com sucesso!");
+        window.location.href = "estoque.html?v=50";
+    });
+}
+</script>
+
+</body>
+</html>
