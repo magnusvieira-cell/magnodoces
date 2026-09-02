@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Produtos Finais • MagnoDoces</title>
+<link rel="stylesheet" href="style.css?v=60">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<body>
+
+<div class="sidebar">
+    <h2 class="logo">MagnoDoces</h2>
+
+    <a href="dashboard.html?v=60" class="item"><span class="material-icons">dashboard</span> Dashboard</a>
+    <a href="estoque.html?v=60" class="item"><span class="material-icons">inventory_2</span> Estoque</a>
+    <a href="ingrediente-novo.html?v=60" class="item"><span class="material-icons">add</span> Novo Ingrediente</a>
+    <a href="produtos-finais.html?v=60" class="item"><span class="material-icons">cake</span> Produtos Finais</a>
+    <a href="produto-final-novo.html?v=60" class="item"><span class="material-icons">add_circle</span> Novo Produto Final</a>
+    <a href="pedido-novo.html?v=60" class="item"><span class="material-icons">shopping_cart</span> Novo Pedido</a>
+    <a href="pedidos.html?v=60" class="item"><span class="material-icons">list_alt</span> Pedidos</a>
+    <a href="producao.html?v=60" class="item"><span class="material-icons">factory</span> Produção</a>
+    <a href="financeiro.html?v=60" class="item"><span class="material-icons">attach_money</span> Financeiro</a>
+    <a href="catalogo.html?v=60" class="item"><span class="material-icons">storefront</span> Catálogo</a>
+    <a href="index.html?v=60" class="item logout"><span class="material-icons">logout</span> Sair</a>
+</div>
+
+<div class="content">
+    <h1>Produtos Finais</h1>
+
+    <button onclick="window.location.href='produto-final-novo.html?v=60'">
+        <span class="material-icons" style="vertical-align:middle;">add_circle</span>
+        Novo Produto Final
+    </button>
+
+    <div class="cards" id="listaProdutos"></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<script src="firebase.js?v=60"></script>
+
+<script>
+auth.onAuthStateChanged(user => {
+    if (!user) window.location.href = "index.html?v=60";
+});
+
+db.collection("produtosFinais").onSnapshot(snapshot => {
+    const area = document.getElementById("listaProdutos");
+    area.innerHTML = "";
+
+    snapshot.forEach(doc => {
+        const p = doc.data();
+
+        area.innerHTML += `
+            <div class="card">
+                <img src="${p.imagem}" style="width:100%; border-radius:10px; margin-bottom:10px;">
+                <h3>${p.nome}</h3>
+                <p>${p.descricao}</p>
+                <p><b>Preço:</b> R$ ${p.preco.toFixed(2)}</p>
+                <p><b>Custo:</b> R$ ${p.custoTotal.toFixed(2)}</p>
+                <p><b>Lucro:</b> R$ ${p.lucro.toFixed(2)}</p>
+
+                <button onclick="editar('${doc.id}')">
+                    <span class="material-icons">edit</span> Editar
+                </button>
+
+                <button onclick="remover('${doc.id}')">
+                    <span class="material-icons">delete</span> Excluir
+                </button>
+            </div>
+        `;
+    });
+});
+
+function editar(id) {
+    window.location.href = "produto-final-novo.html?id=" + id;
+}
+
+function remover(id) {
+    if (confirm("Excluir produto final?")) {
+        db.collection("produtosFinais").doc(id).delete();
+    }
+}
+</script>
+
+</body>
+</html>
