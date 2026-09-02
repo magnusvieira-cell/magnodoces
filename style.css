@@ -1,156 +1,28 @@
-/* ======== ESTILO PROFISSIONAL MAGNODOCES ======== */
-
-/* Fonte moderna */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-
 body {
-    font-family: 'Inter', sans-serif;
-    background: #F7F9FA;
-    margin: 0;
-    padding: 0;
-    color: #8B6F47; /* marrom dourado */
-}
-
-/* ===== MENU LATERAL ===== */
-.sidebar {
-    width: 240px;
-    height: 100vh;
-    background: #FFFFFF;
-    border-right: 1px solid #E0E4E7;
-    position: fixed;
-    top: 0;
-    left: 0;
+    font-family: Arial;
+    background: #F7FAF8;
     padding: 20px;
 }
 
-.sidebar h2 {
-    font-size: 22px;
-    font-weight: 700;
-    color: #8B6F47;
-    margin-bottom: 30px;
-}
-
-.sidebar a {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px;
-    margin-bottom: 10px;
-    text-decoration: none;
-    color: #8B6F47;
-    border-radius: 8px;
-    transition: 0.2s;
-}
-
-.sidebar a:hover {
-    background: #A8E6CF; /* verde menta */
-    color: #8B6F47;
-}
-
-/* ===== CONTEÚDO ===== */
-.content {
-    margin-left: 260px;
-    padding: 30px;
-}
-
-/* ===== CARDS ===== */
 .card {
-    background: #FFFFFF;
-    padding: 25px;
-    border-radius: 14px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    margin-bottom: 25px;
-    border-left: 6px solid #B3CDE0; /* azul serenity */
+    background: #FFF;
+    padding: 20px;
+    border-radius: 12px;
+    max-width: 400px;
+    margin: auto;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.card h3 {
-    margin: 0 0 10px 0;
-    font-size: 22px;
-    font-weight: 600;
-    color: #8B6F47;
-}
-
-/* ===== BOTÕES ===== */
-button, .btn {
-    background: #A8E6CF; /* verde menta */
-    color: #8B6F47; /* marrom dourado */
-    border: none;
-    padding: 12px 20px;
-    border-radius: 10px;
-    font-size: 15px;
-    cursor: pointer;
-    transition: 0.2s;
-    font-weight: 600;
-}
-
-button:hover, .btn:hover {
-    background: #B3CDE0; /* azul serenity */
-}
-
-/* ===== INPUTS ===== */
-input, select {
+input, button {
     width: 100%;
     padding: 12px;
-    border: 1px solid #D1D5DB;
+    margin-top: 10px;
     border-radius: 10px;
-    margin-bottom: 15px;
-    font-size: 15px;
+    border: 1px solid #DDD;
+}
+
+button {
+    background: #A8E6CF;
     color: #8B6F47;
-}
-
-input:focus, select:focus {
-    outline: none;
-    border-color: #A8E6CF;
-    box-shadow: 0 0 0 2px #B3CDE0;
-}
-
-/* ===== TABELAS ===== */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #FFFFFF;
-    border-radius: 14px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-}
-
-th {
-    background: #B3CDE0; /* azul serenity */
-    color: #8B6F47;
-    padding: 14px;
-    font-weight: 600;
-}
-
-td {
-    padding: 14px;
-    border-bottom: 1px solid #EEE;
-    color: #8B6F47;
-}
-
-tr:hover {
-    background: #F0F7F5;
-}
-
-/* ===== STATUS ===== */
-.status {
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 600;
-    display: inline-block;
-    color: #8B6F47;
-}
-
-.pendente { background: #FFF3C4; }
-.producao { background: #A8E6CF; }
-.finalizado { background: #DFF5E1; }
-
-/* ===== TAGS ===== */
-.tag {
-    background: #B3CDE0;
-    color: #8B6F47;
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 600;
+    cursor: pointer;
 }
