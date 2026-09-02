@@ -1,15 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h2>Dashboard</h2>
+
+<nav>
+    <a href="estoque.html">Estoque</a>
+    <a href="pedidos.html">Pedidos</a>
+    <a href="producao.html">Produção</a>
+    <a href="financeiro.html">Financeiro</a>
+    <a href="catalogo.html">Catálogo Público</a>
+</nav>
+
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 <script src="firebase.js"></script>
 
 <script>
 auth.onAuthStateChanged(user => {
     if (!user) window.location.href = "index.html";
 });
-
-// Exemplo de leitura do Firestore
-db.collection("pedidos").get().then(snapshot => {
-    console.log("Pedidos carregados:", snapshot.size);
-});
 </script>
+
+</body>
+</html>
