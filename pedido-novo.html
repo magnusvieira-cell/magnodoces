@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Novo Pedido • MagnoDoces</title>
+<link rel="stylesheet" href="style.css?v=70">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<body>
+
+<div class="sidebar">
+    <h2 class="logo">MagnoDoces</h2>
+
+    <a href="dashboard.html?v=70" class="item"><span class="material-icons">dashboard</span> Dashboard</a>
+    <a href="estoque.html?v=70" class="item"><span class="material-icons">inventory_2</span> Estoque</a>
+    <a href="ingrediente-novo.html?v=70" class="item"><span class="material-icons">add</span> Novo Ingrediente</a>
+    <a href="produtos-finais.html?v=70" class="item"><span class="material-icons">cake</span> Produtos Finais</a>
+    <a href="produto-final-novo.html?v=70" class="item"><span class="material-icons">add_circle</span> Novo Produto Final</a>
+    <a href="pedido-novo.html?v=70" class="item"><span class="material-icons">shopping_cart</span> Novo Pedido</a>
+    <a href="pedidos.html?v=70" class="item"><span class="material-icons">list_alt</span> Pedidos</a>
+    <a href="producao.html?v=70" class="item"><span class="material-icons">factory</span> Produção</a>
+    <a href="financeiro.html?v=70" class="item"><span class="material-icons">attach_money</span> Financeiro</a>
+    <a href="catalogo.html?v=70" class="item"><span class="material-icons">storefront</span> Catálogo</a>
+    <a href="index.html?v=70" class="item logout"><span class="material-icons">logout</span> Sair</a>
+</div>
+
+<div class="content">
+    <h1>Novo Pedido</h1>
+
+    <div class="card">
+        <h3>Informações do Cliente</h3>
+        <input id="cliente" placeholder="Nome do cliente">
+        <input id="data" type="date">
+        <textarea id="obs" placeholder="Observações" style="width:100%; height:80px;"></textarea>
+    </div>
+
+    <div class="card">
+        <h3>Adicionar Produtos ao Pedido</h3>
+
+        <div style="display:flex; gap:10px;">
+            <select id="produto"></select>
+            <input id="quantidade" type="number" placeholder="Qtd" min="1">
+            <button onclick="addProduto()">Adicionar</button>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Qtd</th>
+                    <th>Preço</th>
+                    <th>Custo</th>
+                    <th>Lucro</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="listaPedido"></tbody>
+        </table>
+
+        <h3>Total do Pedido: R$ <span id="totalPedido">0.00</span></h3>
+        <h3>Custo Total: R$ <span id="custoPedido">0.00</span></h3>
+        <h3>Lucro Total: R$ <span id="lucroPedido">0.00</span></h3>
+    </div>
+
+    <button onclick="salvarPedido()">Salvar Pedido</button>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<script src="firebase.js?v=70"></script>
+
+<script>
+auth.onAuthStateChanged(user => {
+    if (!user) window.location.href = "index.html?v=70";
+});
+
+let produtos = [];
+let pedido = [];
+
+db.collection("produtosFinais").get().then(snapshot => {
+    const sel = document.getElementById("produto");
+
+    snapshot.forEach(doc => {
+        const p = { id: doc.id, ...doc.data() };
+        produtos.push(p);
+
+        sel.innerHTML += `<option value="${p.id}">${p.nome}</option>`;
+    });
+});
+
+function addProduto() {
+    const id = document.getElementById("produto").value;
+    const qtd = Number(document.getElementById("quantidade").value);
+
+    if (!qtd || qtd <= 0) {
+        alert("Quantidade inválida.");
+        return;
+    }
+
+    const p = produtos.find(x => x.id === id);
+
+    const precoTotal = p.preco * qtd;
+    const custoTotal = p.custoTotal * qtd;
+    const lucroTotal = p.lucro * qtd;
+
+    pedido.push({
+        id,
+        nome: p.nome,
+        qtd,
+        precoTotal,
+        custoTotal,
+        lucroTotal
+    });
+
+    renderPedido();
+}
+
+function renderPedido() {
+    const tbody = document.getElementById("listaPedido");
+    tbody.innerHTML = "";
+
+    let total = 0;
+    let custo = 0;
+    let lucro = 0;
+
+    pedido.forEach((p, index) => {
+        total += p.precoTotal;
+        custo += p.custoTotal;
+        lucro += p.lucroTotal;
+
+        tbody.innerHTML += `
+            <tr>
+                <td>${p.nome}</td>
+                <td>${p.qtd}</td>
+                <td>R$ ${p.precoTotal.toFixed(2)}</td>
+                <td>R$ ${p.custoTotal.toFixed(2)}</td>
+                <td>R$ ${p.lucroTotal.toFixed(2)}</td>
+                <td><button onclick="remover(${index})"><span class="material-icons">delete</span></button></td>
+            </tr>
+        `;
+    });
+
+    document.getElementById("totalPedido").innerText = total.toFixed(2);
+    document.getElementById("custoPedido").innerText = custo.toFixed(2);
+    document.getElementById("lucroPedido").innerText = lucro.toFixed(2);
+}
+
+function remover(index) {
+    pedido.splice(index, 1);
+    renderPedido();
+}
+
+function salvarPedido() {
+    const cliente = document.getElementById("cliente").value;
+    const data = document.getElementById("data").value;
+    const obs = document.getElementById("obs").value;
+
+    if (!cliente || !data || pedido.length === 0) {
+        alert("Preencha todos os campos e adicione produtos.");
+        return;
+    }
+
+    db.collection("pedidos").add({
+        cliente,
+        data,
+        obs,
+        produtos: pedido,
+        total: Number(document.getElementById("totalPedido").innerText),
+        custo: Number(document.getElementById("custoPedido").innerText),
+        lucro: Number(document.getElementById("lucroPedido").innerText),
+        status: "novo"
+    }).then(() => {
+        alert("Pedido criado com sucesso!");
+        window.location.href = "pedidos.html?v=70";
+    });
+}
+</script>
+
+</body>
+</html>
