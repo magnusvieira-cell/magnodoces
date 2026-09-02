@@ -1,16 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Estoque</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h2>Estoque</h2>
+<a href="estoque-novo.html">Adicionar Item</a>
+
+<ul id="lista"></ul>
+
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 <script src="firebase.js"></script>
 
 <script>
 db.collection("estoque").get().then(snapshot => {
-    const lista = document.getElementById("listaEstoque");
+    const lista = document.getElementById("lista");
 
     snapshot.forEach(doc => {
         const item = doc.data();
-        lista.innerHTML += `
-            <li>${item.item} — R$ ${item.preco.toFixed(2)}</li>
-        `;
+        lista.innerHTML += `<li>${item.nome} — R$ ${item.preco}</li>`;
     });
 });
 </script>
+
+</body>
+</html>
