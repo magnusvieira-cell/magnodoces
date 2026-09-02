@@ -2,30 +2,99 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Financeiro</title>
-<link rel="stylesheet" href="style.css">
+<title>Financeiro • MagnoDoces</title>
+<link rel="stylesheet" href="style.css?v=20">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
 <body>
 
-<h2>Financeiro</h2>
+<div class="sidebar">
+    <h2 class="logo">MagnoDoces</h2>
 
-<p id="total">Carregando...</p>
+    <a href="dashboard.html?v=20" class="item"><span class="material-icons">dashboard</span> Dashboard</a>
+    <a href="estoque.html?v=20" class="item"><span class="material-icons">inventory_2</span> Estoque</a>
+    <a href="pedidos.html?v=20" class="item"><span class="material-icons">shopping_cart</span> Pedidos</a>
+    <a href="producao.html?v=20" class="item"><span class="material-icons">factory</span> Produção</a>
+    <a href="financeiro.html?v=20" class="item"><span class="material-icons">attach_money</span> Financeiro</a>
+    <a href="catalogo.html?v=20" class="item"><span class="material-icons">storefront</span> Catálogo</a>
+    <a href="index.html?v=20" class="item logout"><span class="material-icons">logout</span> Sair</a>
+</div>
+
+<div class="content">
+    <h1>Financeiro</h1>
+
+    <div class="cards">
+        <div class="card">
+            <span class="material-icons icon">trending_up</span>
+            <h3>Receitas</h3>
+            <p>Total: R$ <b id="totalReceitas">0,00</b></p>
+        </div>
+
+        <div class="card">
+            <span class="material-icons icon">trending_down</span>
+            <h3>Despesas</h3>
+            <p>Total: R$ <b id="totalDespesas">0,00</b></p>
+        </div>
+
+        <div class="card">
+            <span class="material-icons icon">account_balance</span>
+            <h3>Saldo</h3>
+            <p>R$ <b id="saldoFinal">0,00</b></p>
+        </div>
+    </div>
+
+    <h2>Movimentações</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Tipo</th>
+                <th>Descrição</th>
+                <th>Valor</th>
+                <th>Data</th>
+            </tr>
+        </thead>
+        <tbody id="listaFinanceiro"></tbody>
+    </table>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-<script src="firebase.js"></script>
+<script src="firebase.js?v=20"></script>
 
 <script>
-db.collection("pedidos").get().then(snapshot => {
-    let total = 0;
+auth.onAuthStateChanged(user => {
+    if (!user) window.location.href = "index.html?v=20";
+});
+
+db.collection("financeiro").onSnapshot(snapshot => {
+    let receitas = 0;
+    let despesas = 0;
+
+    const lista = document.getElementById("listaFinanceiro");
+    lista.innerHTML = "";
 
     snapshot.forEach(doc => {
-        const p = doc.data();
-        total += Number(p.preco || 0);
+        const f = doc.data();
+
+        if (f.tipo === "receita") receitas += f.valor;
+        if (f.tipo === "despesa") despesas += f.valor;
+
+        lista.innerHTML += `
+            <tr>
+                <td>${f.tipo}</td>
+                <td>${f.descricao}</td>
+                <td>R$ ${f.valor.toFixed(2)}</td>
+                <td>${f.data}</td>
+            </tr>
+        `;
     });
 
-    document.getElementById("total").innerText = "Total: R$ " + total.toFixed(2);
+    document.getElementById("totalReceitas").innerText = receitas.toFixed(2);
+    document.getElementById("totalDespesas").innerText = despesas.toFixed(2);
+    document.getElementById("saldoFinal").innerText = (receitas - despesas).toFixed(2);
 });
 </script>
 
