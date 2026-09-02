@@ -2,32 +2,37 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Novo Pedido</title>
+<title>Produção</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<h2>Novo Pedido</h2>
+<h2>Produção</h2>
 
-<input id="cliente" placeholder="Cliente">
-<input id="produto" placeholder="Produto">
-<input id="quantidade" placeholder="Quantidade">
-
-<button onclick="salvar()">Salvar</button>
+<ul id="lista"></ul>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 <script src="firebase.js"></script>
 
 <script>
-function salvar() {
-    const cliente = document.getElementById("cliente").value;
-    const produto = document.getElementById("produto").value;
-    const quantidade = Number(document.getElementById("quantidade").value);
+db.collection("pedidos").where("status", "==", "novo").get().then(snapshot => {
+    const lista = document.getElementById("lista");
 
-    db.collection("pedidos").add({ cliente, produto, quantidade, status: "novo" })
-        .then(() => window.location.href = "pedidos.html");
+    snapshot.forEach(doc => {
+        const p = doc.data();
+        lista.innerHTML += `
+            <li>
+                ${p.cliente} — ${p.produto} (${p.quantidade})
+                <button onclick="finalizar('${doc.id}')">Finalizar</button>
+            </li>`;
+    });
+});
+
+function finalizar(id) {
+    db.collection("pedidos").doc(id).update({ status: "finalizado" })
+        .then(() => location.reload());
 }
 </script>
 
