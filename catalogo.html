@@ -2,25 +2,59 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Catálogo</title>
-<link rel="stylesheet" href="style.css">
+<title>Catálogo • MagnoDoces</title>
+<link rel="stylesheet" href="style.css?v=20">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
 <body>
 
-<h2>Catálogo</h2>
+<div class="sidebar">
+    <h2 class="logo">MagnoDoces</h2>
 
-<div id="catalogo"></div>
+    <a href="dashboard.html?v=20" class="item"><span class="material-icons">dashboard</span> Dashboard</a>
+    <a href="estoque.html?v=20" class="item"><span class="material-icons">inventory_2</span> Estoque</a>
+    <a href="pedidos.html?v=20" class="item"><span class="material-icons">shopping_cart</span> Pedidos</a>
+    <a href="producao.html?v=20" class="item"><span class="material-icons">factory</span> Produção</a>
+    <a href="financeiro.html?v=20" class="item"><span class="material-icons">attach_money</span> Financeiro</a>
+    <a href="catalogo.html?v=20" class="item"><span class="material-icons">storefront</span> Catálogo</a>
+    <a href="index.html?v=20" class="item logout"><span class="material-icons">logout</span> Sair</a>
+</div>
 
-<div id="carrinho"></div>
+<div class="content">
+    <h1>Catálogo Público</h1>
 
-<button onclick="finalizarPedido()">Finalizar Pedido</button>
+    <div class="cards" id="listaCatalogo"></div>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-<script src="firebase.js"></script>
+<script src="firebase.js?v=20"></script>
 
-<script src="carrinho.js"></script>
+<script>
+auth.onAuthStateChanged(user => {
+    if (!user) window.location.href = "index.html?v=20";
+});
+
+db.collection("catalogo").onSnapshot(snapshot => {
+    const area = document.getElementById("listaCatalogo");
+    area.innerHTML = "";
+
+    snapshot.forEach(doc => {
+        const c = doc.data();
+
+        area.innerHTML += `
+            <div class="card">
+                <img src="${c.imagem}" style="width:100%; border-radius:10px; margin-bottom:10px;">
+                <h3>${c.nome}</h3>
+                <p>${c.descricao}</p>
+                <p><b>R$ ${c.preco.toFixed(2)}</b></p>
+            </div>
+        `;
+    });
+});
+</script>
 
 </body>
 </html>
