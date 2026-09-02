@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Produção • MagnoDoces</title>
-<link rel="stylesheet" href="style.css?v=20">
+<link rel="stylesheet" href="style.css?v=90">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
@@ -12,51 +12,135 @@
 <div class="sidebar">
     <h2 class="logo">MagnoDoces</h2>
 
-    <a href="dashboard.html?v=20" class="item"><span class="material-icons">dashboard</span> Dashboard</a>
-    <a href="estoque.html?v=20" class="item"><span class="material-icons">inventory_2</span> Estoque</a>
-    <a href="pedidos.html?v=20" class="item"><span class="material-icons">shopping_cart</span> Pedidos</a>
-    <a href="producao.html?v=20" class="item"><span class="material-icons">factory</span> Produção</a>
-    <a href="financeiro.html?v=20" class="item"><span class="material-icons">attach_money</span> Financeiro</a>
-    <a href="catalogo.html?v=20" class="item"><span class="material-icons">storefront</span> Catálogo</a>
-    <a href="index.html?v=20" class="item logout"><span class="material-icons">logout</span> Sair</a>
+    <a href="dashboard.html?v=90" class="item"><span class="material-icons">dashboard</span> Dashboard</a>
+    <a href="estoque.html?v=90" class="item"><span class="material-icons">inventory_2</span> Estoque</a>
+    <a href="ingrediente-novo.html?v=90" class="item"><span class="material-icons">add</span> Novo Ingrediente</a>
+    <a href="produtos-finais.html?v=90" class="item"><span class="material-icons">cake</span> Produtos Finais</a>
+    <a href="pedido-novo.html?v=90" class="item"><span class="material-icons">shopping_cart</span> Novo Pedido</a>
+    <a href="pedidos.html?v=90" class="item"><span class="material-icons">list_alt</span> Pedidos</a>
+    <a href="producao.html?v=90" class="item"><span class="material-icons">factory</span> Produção</a>
+    <a href="financeiro.html?v=90" class="item"><span class="material-icons">attach_money</span> Financeiro</a>
+    <a href="catalogo.html?v=90" class="item"><span class="material-icons">storefront</span> Catálogo</a>
+    <a href="index.html?v=90" class="item logout"><span class="material-icons">logout</span> Sair</a>
 </div>
 
 <div class="content">
     <h1>Produção</h1>
 
-    <div class="cards" id="cardsProducao"></div>
+    <div id="infoPedido" class="card"></div>
+
+    <div class="card">
+        <h3>Ingredientes Consumidos</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Ingrediente</th>
+                    <th>Quantidade Usada</th>
+                    <th>Medida</th>
+                </tr>
+            </thead>
+            <tbody id="listaIngredientes"></tbody>
+        </table>
+    </div>
+
+    <button onclick="finalizarProducao()">Finalizar Produção</button>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-<script src="firebase.js?v=20"></script>
+<script src="firebase.js?v=90"></script>
 
 <script>
 auth.onAuthStateChanged(user => {
-    if (!user) window.location.href = "index.html?v=20";
+    if (!user) window.location.href = "index.html?v=90";
 });
 
-db.collection("producao").onSnapshot(snapshot => {
-    const area = document.getElementById("cardsProducao");
-    area.innerHTML = "";
+const urlParams = new URLSearchParams(window.location.search);
+const pedidoId = urlParams.get("pedido");
 
-    snapshot.forEach(doc => {
-        const p = doc.data();
-        area.innerHTML += `
-            <div class="card">
-                <span class="material-icons icon">cake</span>
-                <h3>${p.produto}</h3>
-                <p>Quantidade: <b>${p.quantidade}</b></p>
-                <p>Status: <b>${p.status}</b></p>
-                <button onclick="editar('${doc.id}')">Editar</button>
-            </div>
+let pedido = null;
+let ingredientesConsumidos = {};
+
+db.collection("pedidos").doc(pedidoId).get().then(async doc => {
+    pedido = doc.data();
+
+    document.getElementById("infoPedido").innerHTML = `
+        <h3>Cliente: ${pedido.cliente}</h3>
+        <p><b>Data:</b> ${pedido.data}</p>
+        <p><b>Total:</b> R$ ${pedido.total.toFixed(2)}</p>
+        <p><b>Status:</b> ${pedido.status}</p>
+    `;
+
+    await calcularIngredientes();
+    renderIngredientes();
+});
+
+async function calcularIngredientes() {
+    for (let item of pedido.produtos) {
+        const produtoDoc = await db.collection("produtosFinais").doc(item.id).get();
+        const produto = produtoDoc.data();
+
+        produto.ingredientes.forEach(ing => {
+            const totalQtd = ing.qtd * item.qtd;
+
+            if (!ingredientesConsumidos[ing.id]) {
+                ingredientesConsumidos[ing.id] = {
+                    nome: ing.nome,
+                    medida: ing.medida,
+                    quantidade: 0
+                };
+            }
+
+            ingredientesConsumidos[ing.id].quantidade += totalQtd;
+        });
+    }
+}
+
+function renderIngredientes() {
+    const tbody = document.getElementById("listaIngredientes");
+    tbody.innerHTML = "";
+
+    Object.values(ingredientesConsumidos).forEach(ing => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${ing.nome}</td>
+                <td>${ing.quantidade}</td>
+                <td>${ing.medida}</td>
+            </tr>
         `;
     });
-});
+}
 
-function editar(id) {
-    window.location.href = "producao-novo.html?id=" + id;
+async function finalizarProducao() {
+    // Baixa automática no estoque
+    for (let id in ingredientesConsumidos) {
+        const ing = ingredientesConsumidos[id];
+
+        const doc = await db.collection("estoque").doc(id).get();
+        const atual = doc.data().quantidade;
+
+        await db.collection("estoque").doc(id).update({
+            quantidade: atual - ing.quantidade
+        });
+    }
+
+    // Atualiza status do pedido
+    await db.collection("pedidos").doc(pedidoId).update({
+        status: "pronto"
+    });
+
+    // Registra no financeiro
+    await db.collection("financeiro").add({
+        tipo: "produção",
+        data: new Date().toISOString().split("T")[0],
+        receita: pedido.total,
+        custo: pedido.custo,
+        lucro: pedido.lucro
+    });
+
+    alert("Produção finalizada com sucesso!");
+    window.location.href = "pedidos.html?v=90";
 }
 </script>
 
