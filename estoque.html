@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Estoque • MagnoDoces</title>
-<link rel="stylesheet" href="style.css?v=20">
+<link rel="stylesheet" href="style.css?v=21">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
@@ -12,41 +12,48 @@
 <div class="sidebar">
     <h2 class="logo">MagnoDoces</h2>
 
-    <a href="dashboard.html?v=20" class="item"><span class="material-icons">dashboard</span> Dashboard</a>
-    <a href="estoque.html?v=20" class="item"><span class="material-icons">inventory_2</span> Estoque</a>
-    <a href="pedidos.html?v=20" class="item"><span class="material-icons">shopping_cart</span> Pedidos</a>
-    <a href="producao.html?v=20" class="item"><span class="material-icons">factory</span> Produção</a>
-    <a href="financeiro.html?v=20" class="item"><span class="material-icons">attach_money</span> Financeiro</a>
-    <a href="catalogo.html?v=20" class="item"><span class="material-icons">storefront</span> Catálogo</a>
-    <a href="index.html?v=20" class="item logout"><span class="material-icons">logout</span> Sair</a>
+    <a href="dashboard.html?v=21" class="item"><span class="material-icons">dashboard</span> Dashboard</a>
+    <a href="estoque.html?v=21" class="item"><span class="material-icons">inventory_2</span> Estoque</a>
+    <a href="pedidos.html?v=21" class="item"><span class="material-icons">shopping_cart</span> Pedidos</a>
+    <a href="producao.html?v=21" class="item"><span class="material-icons">factory</span> Produção</a>
+    <a href="financeiro.html?v=21" class="item"><span class="material-icons">attach_money</span> Financeiro</a>
+    <a href="catalogo.html?v=21" class="item"><span class="material-icons">storefront</span> Catálogo</a>
+    <a href="index.html?v=21" class="item logout"><span class="material-icons">logout</span> Sair</a>
 </div>
 
 <div class="content">
     <h1>Estoque</h1>
 
-    <button onclick="window.location.href='estoque-novo.html?v=20'">Adicionar Item</button>
+    <div style="margin-bottom:20px;">
+        <button onclick="window.location.href='estoque-novo.html?v=21'">
+            <span class="material-icons" style="vertical-align:middle;">add_circle</span>
+            Adicionar Item
+        </button>
+    </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Produto</th>
-                <th>Quantidade</th>
-                <th>Categoria</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody id="listaEstoque"></tbody>
-    </table>
+    <div class="card" style="padding:0;">
+        <table>
+            <thead>
+                <tr>
+                    <th><span class="material-icons">cake</span> Produto</th>
+                    <th><span class="material-icons">numbers</span> Quantidade</th>
+                    <th><span class="material-icons">category</span> Categoria</th>
+                    <th><span class="material-icons">settings</span> Ações</th>
+                </tr>
+            </thead>
+            <tbody id="listaEstoque"></tbody>
+        </table>
+    </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-<script src="firebase.js?v=20"></script>
+<script src="firebase.js?v=21"></script>
 
 <script>
 auth.onAuthStateChanged(user => {
-    if (!user) window.location.href = "index.html?v=20";
+    if (!user) window.location.href = "index.html?v=21";
 });
 
 db.collection("estoque").onSnapshot(snapshot => {
@@ -55,14 +62,19 @@ db.collection("estoque").onSnapshot(snapshot => {
 
     snapshot.forEach(doc => {
         const item = doc.data();
+
         lista.innerHTML += `
             <tr>
                 <td>${item.nome}</td>
                 <td>${item.quantidade}</td>
                 <td>${item.categoria}</td>
                 <td>
-                    <button onclick="editar('${doc.id}')">Editar</button>
-                    <button onclick="remover('${doc.id}')">Excluir</button>
+                    <button onclick="editar('${doc.id}')">
+                        <span class="material-icons">edit</span>
+                    </button>
+                    <button onclick="remover('${doc.id}')">
+                        <span class="material-icons">delete</span>
+                    </button>
                 </td>
             </tr>
         `;
