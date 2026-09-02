@@ -1,20 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Pedidos</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h2>Pedidos</h2>
+<a href="pedido-novo.html">Novo Pedido</a>
+
+<ul id="lista"></ul>
+
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 <script src="firebase.js"></script>
 
 <script>
-db.collection("pedidos").orderBy("data", "desc").get().then(snapshot => {
-    const lista = document.getElementById("listaPedidos");
+db.collection("pedidos").get().then(snapshot => {
+    const lista = document.getElementById("lista");
 
     snapshot.forEach(doc => {
         const p = doc.data();
-        lista.innerHTML += `
-            <div class="pedido-card">
-                <h4>${p.cliente}</h4>
-                <p>${p.produto} — ${p.quantidade} un</p>
-                <p>${p.data}</p>
-            </div>
-        `;
+        lista.innerHTML += `<li>${p.cliente} — ${p.produto} (${p.quantidade})</li>`;
     });
 });
 </script>
+
+</body>
+</html>
