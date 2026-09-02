@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Dashboard</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=1">
 </head>
 
 <body>
@@ -11,20 +11,25 @@
 <h2>Dashboard</h2>
 
 <nav>
-    <a href="estoque.html">Estoque</a>
-    <a href="pedidos.html">Pedidos</a>
-    <a href="producao.html">Produção</a>
-    <a href="financeiro.html">Financeiro</a>
-    <a href="catalogo.html">Catálogo Público</a>
+    <a href="estoque.html?v=1">Estoque</a>
+    <a href="pedidos.html?v=1">Pedidos</a>
+    <a href="producao.html?v=1">Produção</a>
+    <a href="financeiro.html?v=1">Financeiro</a>
+    <a href="catalogo.html?v=1">Catálogo Público</a>
 </nav>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-<script src="firebase.js"></script>
+<script src="firebase.js?v=1"></script>
 
 <script>
 auth.onAuthStateChanged(user => {
-    if (!user) window.location.href = "index.html";
+    if (!user) {
+        console.log("Não logado, voltando para index");
+        window.location.href = "index.html?v=1";
+    } else {
+        console.log("Usuário logado:", user.email);
+    }
 });
 </script>
 
