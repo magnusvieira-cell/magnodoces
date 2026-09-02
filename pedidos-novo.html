@@ -1,22 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Novo Pedido</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h2>Novo Pedido</h2>
+
+<input id="cliente" placeholder="Cliente">
+<input id="produto" placeholder="Produto">
+<input id="quantidade" placeholder="Quantidade">
+
+<button onclick="salvar()">Salvar</button>
+
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 <script src="firebase.js"></script>
 
 <script>
-function salvarPedido() {
+function salvar() {
     const cliente = document.getElementById("cliente").value;
     const produto = document.getElementById("produto").value;
     const quantidade = Number(document.getElementById("quantidade").value);
 
-    db.collection("pedidos").add({
-        cliente,
-        produto,
-        quantidade,
-        data: new Date().toLocaleDateString(),
-        status: "novo"
-    }).then(() => {
-        alert("Pedido salvo!");
-        window.location.href = "pedidos.html";
-    });
+    db.collection("pedidos").add({ cliente, produto, quantidade, status: "novo" })
+        .then(() => window.location.href = "pedidos.html");
 }
 </script>
+
+</body>
+</html>
