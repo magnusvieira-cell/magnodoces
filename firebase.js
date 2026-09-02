@@ -2,14 +2,15 @@
 // CONFIGURAÇÃO DO FIREBASE
 // ===============================
 var firebaseConfig = {
-    apiKey: "SUA_API_KEY",
-    authDomain: "SEU_AUTH_DOMAIN",
-    projectId: "SEU_PROJECT_ID",
-    storageBucket: "SEU_STORAGE_BUCKET",
-    messagingSenderId: "SEU_SENDER_ID",
-    appId: "SEU_APP_ID"
+  apiKey: "AIzaSyBZ9j9lf8Zo9vCq3_Sp7uqomTb3XKGVVwk",
+  authDomain: "magnodoces-c7af7.firebaseapp.com",
+  projectId: "magnodoces-c7af7",
+  storageBucket: "magnodoces-c7af7.firebasestorage.app",
+  messagingSenderId: "76553441552",
+  appId: "1:76553441552:web:c17aff981c7ad34aaad595"
 };
 
+// Inicializa Firebase
 firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
@@ -24,7 +25,7 @@ function login() {
 
     auth.signInWithEmailAndPassword(email, senha)
         .then(() => {
-            window.location.href = "dashboard.html?v=120";
+            window.location.href = "dashboard.html";
         })
         .catch(err => {
             alert("Erro ao entrar: " + err.message);
@@ -36,12 +37,12 @@ function login() {
 // ===============================
 function logout() {
     auth.signOut().then(() => {
-        window.location.href = "index.html?v=120";
+        window.location.href = "index.html";
     });
 }
 
 // ===============================
-// CADASTRO DE USUÁRIO (OPCIONAL)
+// CADASTRO DE USUÁRIO
 // ===============================
 function cadastrar() {
     const email = document.getElementById("email").value;
@@ -57,10 +58,8 @@ function cadastrar() {
 }
 
 // ===============================
-// FUNÇÕES GERAIS DO SISTEMA
+// ESTOQUE
 // ===============================
-
-// Salvar ingrediente no estoque
 function salvarIngrediente(nome, medida, quantidade, custo) {
     return db.collection("estoque").add({
         nome,
@@ -70,12 +69,10 @@ function salvarIngrediente(nome, medida, quantidade, custo) {
     });
 }
 
-// Atualizar ingrediente
 function atualizarIngrediente(id, dados) {
     return db.collection("estoque").doc(id).update(dados);
 }
 
-// Remover ingrediente
 function removerIngrediente(id) {
     return db.collection("estoque").doc(id).delete();
 }
@@ -83,18 +80,14 @@ function removerIngrediente(id) {
 // ===============================
 // PRODUTOS FINAIS
 // ===============================
-
-// Salvar produto final
 function salvarProdutoFinal(dados) {
     return db.collection("produtosFinais").add(dados);
 }
 
-// Atualizar produto final
 function atualizarProdutoFinal(id, dados) {
     return db.collection("produtosFinais").doc(id).update(dados);
 }
 
-// Remover produto final
 function removerProdutoFinal(id) {
     return db.collection("produtosFinais").doc(id).delete();
 }
@@ -102,18 +95,14 @@ function removerProdutoFinal(id) {
 // ===============================
 // PEDIDOS
 // ===============================
-
-// Criar pedido
 function salvarPedido(dados) {
     return db.collection("pedidos").add(dados);
 }
 
-// Atualizar pedido
 function atualizarPedido(id, dados) {
     return db.collection("pedidos").doc(id).update(dados);
 }
 
-// Remover pedido
 function removerPedido(id) {
     return db.collection("pedidos").doc(id).delete();
 }
@@ -121,8 +110,6 @@ function removerPedido(id) {
 // ===============================
 // PRODUÇÃO
 // ===============================
-
-// Baixa automática no estoque
 async function baixarEstoque(ingredientesConsumidos) {
     for (let id in ingredientesConsumidos) {
         const ing = ingredientesConsumidos[id];
@@ -139,8 +126,6 @@ async function baixarEstoque(ingredientesConsumidos) {
 // ===============================
 // FINANCEIRO
 // ===============================
-
-// Registrar movimentação financeira
 function registrarFinanceiro(tipo, receita, custo, lucro) {
     return db.collection("financeiro").add({
         tipo,
