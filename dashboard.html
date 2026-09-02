@@ -3,10 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <title>Dashboard • MagnoDoces</title>
-<link rel="stylesheet" href="style.css?v=20">
-
-<!-- Ícones Google -->
+<link rel="stylesheet" href="style.css?v=130">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -14,33 +13,17 @@
 <div class="sidebar">
     <h2 class="logo">MagnoDoces</h2>
 
-    <a href="dashboard.html?v=20" class="item">
-        <span class="material-icons">dashboard</span> Dashboard
-    </a>
-
-    <a href="estoque.html?v=20" class="item">
-        <span class="material-icons">inventory_2</span> Estoque
-    </a>
-
-    <a href="pedidos.html?v=20" class="item">
-        <span class="material-icons">shopping_cart</span> Pedidos
-    </a>
-
-    <a href="producao.html?v=20" class="item">
-        <span class="material-icons">factory</span> Produção
-    </a>
-
-    <a href="financeiro.html?v=20" class="item">
-        <span class="material-icons">attach_money</span> Financeiro
-    </a>
-
-    <a href="catalogo.html?v=20" class="item">
-        <span class="material-icons">storefront</span> Catálogo Público
-    </a>
-
-    <a href="index.html?v=20" class="item logout">
-        <span class="material-icons">logout</span> Sair
-    </a>
+    <a href="dashboard.html?v=130" class="item"><span class="material-icons">dashboard</span> Dashboard</a>
+    <a href="estoque.html?v=130" class="item"><span class="material-icons">inventory_2</span> Estoque</a>
+    <a href="ingrediente-novo.html?v=130" class="item"><span class="material-icons">add</span> Novo Ingrediente</a>
+    <a href="produtos-finais.html?v=130" class="item"><span class="material-icons">cake</span> Produtos Finais</a>
+    <a href="produto-final-novo.html?v=130" class="item"><span class="material-icons">add_circle</span> Novo Produto Final</a>
+    <a href="pedido-novo.html?v=130" class="item"><span class="material-icons">shopping_cart</span> Novo Pedido</a>
+    <a href="pedidos.html?v=130" class="item"><span class="material-icons">list_alt</span> Pedidos</a>
+    <a href="producao.html?v=130" class="item"><span class="material-icons">factory</span> Produção</a>
+    <a href="financeiro.html?v=130" class="item"><span class="material-icons">attach_money</span> Financeiro</a>
+    <a href="catalogo.html?v=130" class="item"><span class="material-icons">storefront</span> Catálogo</a>
+    <a href="index.html?v=130" class="item logout"><span class="material-icons">logout</span> Sair</a>
 </div>
 
 <div class="content">
@@ -48,42 +31,145 @@
 
     <div class="cards">
         <div class="card">
-            <span class="material-icons icon">inventory_2</span>
-            <h3>Estoque</h3>
-            <p>Gerencie ingredientes e produtos.</p>
+            <h3>Receita Total</h3>
+            <p id="receitaTotal">R$ 0.00</p>
         </div>
 
         <div class="card">
-            <span class="material-icons icon">shopping_cart</span>
+            <h3>Lucro Total</h3>
+            <p id="lucroTotal">R$ 0.00</p>
+        </div>
+
+        <div class="card">
             <h3>Pedidos</h3>
-            <p>Acompanhe pedidos e entregas.</p>
+            <p id="totalPedidos">0</p>
         </div>
 
         <div class="card">
-            <span class="material-icons icon">factory</span>
-            <h3>Produção</h3>
-            <p>Controle a produção diária.</p>
+            <h3>Produtos Finais</h3>
+            <p id="totalProdutos">0</p>
         </div>
 
         <div class="card">
-            <span class="material-icons icon">attach_money</span>
-            <h3>Financeiro</h3>
-            <p>Relatórios e movimentações.</p>
+            <h3>Ingredientes no Estoque</h3>
+            <p id="totalIngredientes">0</p>
         </div>
+    </div>
+
+    <div class="card">
+        <h3>Receita dos Últimos 7 Dias</h3>
+        <canvas id="grafReceita"></canvas>
+    </div>
+
+    <div class="card">
+        <h3>Lucro dos Últimos 7 Dias</h3>
+        <canvas id="grafLucro"></canvas>
     </div>
 </div>
 
-<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-<script src="firebase.js?v=20"></script>
+<script src="firebase.js?v=130"></script>
 
 <script>
 auth.onAuthStateChanged(user => {
-    if (!user) {
-        window.location.href = "index.html?v=20";
+    if (!user) window.location.href = "index.html?v=130";
+});
+
+// ===============================
+// CARDS SUPERIORES
+// ===============================
+
+// Financeiro
+db.collection("financeiro").get().then(snapshot => {
+    let receita = 0;
+    let lucro = 0;
+
+    snapshot.forEach(doc => {
+        receita += doc.data().receita;
+        lucro += doc.data().lucro;
+    });
+
+    document.getElementById("receitaTotal").innerText = "R$ " + receita.toFixed(2);
+    document.getElementById("lucroTotal").innerText = "R$ " + lucro.toFixed(2);
+});
+
+// Total de pedidos
+db.collection("pedidos").get().then(snapshot => {
+    document.getElementById("totalPedidos").innerText = snapshot.size;
+});
+
+// Total de produtos finais
+db.collection("produtosFinais").get().then(snapshot => {
+    document.getElementById("totalProdutos").innerText = snapshot.size;
+});
+
+// Total de ingredientes
+db.collection("estoque").get().then(snapshot => {
+    document.getElementById("totalIngredientes").innerText = snapshot.size;
+});
+
+// ===============================
+// GRÁFICOS
+// ===============================
+
+db.collection("financeiro").orderBy("data", "asc").get().then(snapshot => {
+    let dias = [];
+    let receitas = [];
+    let lucros = [];
+
+    const hoje = new Date();
+    const ultimos7 = [];
+
+    for (let i = 6; i >= 0; i--) {
+        const d = new Date(hoje);
+        d.setDate(d.getDate() - i);
+        const dia = d.toISOString().split("T")[0];
+        ultimos7.push(dia);
     }
+
+    ultimos7.forEach(d => {
+        dias.push(d);
+        receitas.push(0);
+        lucros.push(0);
+    });
+
+    snapshot.forEach(doc => {
+        const mov = doc.data();
+        const index = dias.indexOf(mov.data);
+
+        if (index !== -1) {
+            receitas[index] += mov.receita;
+            lucros[index] += mov.lucro;
+        }
+    });
+
+    new Chart(document.getElementById("grafReceita"), {
+        type: "line",
+        data: {
+            labels: dias,
+            datasets: [{
+                label: "Receita",
+                data: receitas,
+                borderColor: "#4CAF50",
+                fill: false
+            }]
+        }
+    });
+
+    new Chart(document.getElementById("grafLucro"), {
+        type: "line",
+        data: {
+            labels: dias,
+            datasets: [{
+                label: "Lucro",
+                data: lucros,
+                borderColor: "#2196F3",
+                fill: false
+            }]
+        }
+    });
 });
 </script>
 
