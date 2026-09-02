@@ -3,45 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <title>Login • MagnoDoces</title>
-<link rel="stylesheet" href="style.css?v=2">
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<div class="card">
-    <h2>Login do Administrador</h2>
+<div class="login-container">
+    <h1>MagnoDoces</h1>
 
-    <input id="email" placeholder="Email">
+    <input id="email" type="email" placeholder="Email">
     <input id="senha" type="password" placeholder="Senha">
 
     <button onclick="login()">Entrar</button>
 </div>
 
-<!-- ORDEM CORRETA DOS SCRIPTS -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-
-<script src="firebase.js?v=2"></script>
-
-<script>
-function login() {
-    console.log("Login iniciado");
-
-    const email = document.getElementById("email").value;
-    const senha = document.getElementById("senha").value;
-
-    auth.signInWithEmailAndPassword(email, senha)
-        .then(() => {
-            console.log("Login OK, redirecionando...");
-            window.location.href = "dashboard.html?v=2";
-        })
-        .catch(err => {
-            console.error("Erro no login:", err);
-            alert("Erro: " + err.message);
-        });
-}
-</script>
+<script src="firebase.js"></script>
+<script src="auth.js"></script>
 
 </body>
 </html>
