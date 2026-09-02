@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Catálogo • MagnoDoces</title>
-<link rel="stylesheet" href="style.css?v=20">
+<link rel="stylesheet" href="style.css?v=110">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
@@ -12,44 +12,48 @@
 <div class="sidebar">
     <h2 class="logo">MagnoDoces</h2>
 
-    <a href="dashboard.html?v=20" class="item"><span class="material-icons">dashboard</span> Dashboard</a>
-    <a href="estoque.html?v=20" class="item"><span class="material-icons">inventory_2</span> Estoque</a>
-    <a href="pedidos.html?v=20" class="item"><span class="material-icons">shopping_cart</span> Pedidos</a>
-    <a href="producao.html?v=20" class="item"><span class="material-icons">factory</span> Produção</a>
-    <a href="financeiro.html?v=20" class="item"><span class="material-icons">attach_money</span> Financeiro</a>
-    <a href="catalogo.html?v=20" class="item"><span class="material-icons">storefront</span> Catálogo</a>
-    <a href="index.html?v=20" class="item logout"><span class="material-icons">logout</span> Sair</a>
+    <a href="dashboard.html?v=110" class="item"><span class="material-icons">dashboard</span> Dashboard</a>
+    <a href="estoque.html?v=110" class="item"><span class="material-icons">inventory_2</span> Estoque</a>
+    <a href="ingrediente-novo.html?v=110" class="item"><span class="material-icons">add</span> Novo Ingrediente</a>
+    <a href="produtos-finais.html?v=110" class="item"><span class="material-icons">cake</span> Produtos Finais</a>
+    <a href="produto-final-novo.html?v=110" class="item"><span class="material-icons">add_circle</span> Novo Produto Final</a>
+    <a href="pedido-novo.html?v=110" class="item"><span class="material-icons">shopping_cart</span> Novo Pedido</a>
+    <a href="pedidos.html?v=110" class="item"><span class="material-icons">list_alt</span> Pedidos</a>
+    <a href="producao.html?v=110" class="item"><span class="material-icons">factory</span> Produção</a>
+    <a href="financeiro.html?v=110" class="item"><span class="material-icons">attach_money</span> Financeiro</a>
+    <a href="catalogo.html?v=110" class="item"><span class="material-icons">storefront</span> Catálogo</a>
+    <a href="index.html?v=110" class="item logout"><span class="material-icons">logout</span> Sair</a>
 </div>
 
 <div class="content">
-    <h1>Catálogo Público</h1>
+    <h1>Catálogo</h1>
 
-    <div class="cards" id="listaCatalogo"></div>
+    <div id="listaCatalogo" class="cards"></div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-<script src="firebase.js?v=20"></script>
+<script src="firebase.js?v=110"></script>
 
 <script>
 auth.onAuthStateChanged(user => {
-    if (!user) window.location.href = "index.html?v=20";
+    if (!user) window.location.href = "index.html?v=110";
 });
 
-db.collection("catalogo").onSnapshot(snapshot => {
+db.collection("produtosFinais").onSnapshot(snapshot => {
     const area = document.getElementById("listaCatalogo");
     area.innerHTML = "";
 
     snapshot.forEach(doc => {
-        const c = doc.data();
+        const p = doc.data();
 
         area.innerHTML += `
             <div class="card">
-                <img src="${c.imagem}" style="width:100%; border-radius:10px; margin-bottom:10px;">
-                <h3>${c.nome}</h3>
-                <p>${c.descricao}</p>
-                <p><b>R$ ${c.preco.toFixed(2)}</b></p>
+                <img src="${p.imagem}" style="width:100%; border-radius:10px; margin-bottom:10px;">
+                <h3>${p.nome}</h3>
+                <p>${p.descricao}</p>
+                <p><b>Preço:</b> R$ ${p.preco.toFixed(2)}</p>
             </div>
         `;
     });
