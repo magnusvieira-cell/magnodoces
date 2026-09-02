@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Finalizar Pedido • MagnoDoces</title>
+<link rel="stylesheet" href="style.css?v=200">
+</head>
+
+<body>
+
+<h1 style="text-align:center;">Finalizar Pedido</h1>
+
+<div id="listaCarrinho" class="cards"></div>
+
+<div class="card">
+    <h3>Informações do Cliente</h3>
+    <input id="cliente" placeholder="Seu nome">
+    <input id="telefone" placeholder="Seu telefone">
+    <input id="data" type="date">
+    <textarea id="obs" placeholder="Observações" style="width:100%; height:80px;"></textarea>
+</div>
+
+<h2>Total: R$ <span id="total">0.00</span></h2>
+
+<button onclick="finalizarPedido()" style="padding:15px 25px; background:#4CAF50; color:white; border:none; border-radius:10px; font-size:18px;">
+    Enviar Pedido
+</button>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+<script>
+// CONFIGURAÇÃO DO FIREBASE
+var firebaseConfig = {
+    apiKey: "SUA_API_KEY",
+    authDomain: "SEU_AUTH_DOMAIN",
+    projectId: "SEU_PROJECT_ID",
+    storageBucket: "SEU_STORAGE_BUCKET",
+    messagingSenderId: "SEU_SENDER_ID",
+    appId: "SEU_APP_ID"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+let carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
+
+function renderCarrinho() {
+    const area = document.getElementById("listaCarrinho");
+    area.innerHTML = "";
+
+    let total = 0;
+
+    carrinho.forEach((p, index) => {
+        total += p.preco * p.qtd;
+
+        area.innerHTML += `
+            <div class="card">
+                <h3>${p.nome}</h3>
+                <p>Preço: R$ ${p.preco.toFixed(2)}</p>
+                <p>Quantidade: 
+                    <input type="number" value="${p.qtd}" min="1" onchange="alterarQtd(${index}, this.value)">
+                </p>
+                <button onclick="remover(${index})">Remover</button>
+            </div>
+        `;
+    });
+
+    document.getElementById("total").innerText = total.toFixed(2);
+}
+
+function alterarQtd(index, qtd) {
+    carrinho[index].qtd = Number(qtd);
+    localStorage.setItem("carrinho", JSON.stringify(carrinho));
+    renderCarrinho();
+}
+
+function remover(index) {
+    carrinho.splice(index, 1);
+    localStorage.setItem("carrinho", JSON.stringify(carrinho));
+    renderCarrinho();
+}
+
+renderCarrinho();
+
+function finalizarPedido() {
+    const cliente = document.getElementById("cliente").value;
+    const telefone = document.getElementById("telefone").value;
+    const data = document.getElementById("data").value;
+    const obs = document.getElementById("obs").value;
+
+    if (!cliente || !telefone || !data || carrinho.length === 0) {
+        alert("Preencha todos os campos.");
+        return;
+    }
+
+    db.collection("pedidos").add({
+        cliente,
+        telefone,
+        data,
+        obs,
+        produtos: carrinho,
+        total: Number(document.getElementById("total").innerText),
+        custo: 0,
+        lucro: 0,
+        status: "novo",
+        origem: "cliente"
+    }).then(() => {
+        alert("Pedido enviado com sucesso!");
+        localStorage.removeItem("carrinho");
+        window.location.href = "cliente-catalogo.html?v=200";
+    });
+}
+</script>
+
+</body>
+</html>
