@@ -2,33 +2,87 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Dashboard</title>
-<link rel="stylesheet" href="style.css?v=1">
+<title>Dashboard • MagnoDoces</title>
+<link rel="stylesheet" href="style.css?v=20">
+
+<!-- Ícones Google -->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
 <body>
 
-<h2>Dashboard</h2>
+<div class="sidebar">
+    <h2 class="logo">MagnoDoces</h2>
 
-<nav>
-    <a href="estoque.html?v=1">Estoque</a>
-    <a href="pedidos.html?v=1">Pedidos</a>
-    <a href="producao.html?v=1">Produção</a>
-    <a href="financeiro.html?v=1">Financeiro</a>
-    <a href="catalogo.html?v=1">Catálogo Público</a>
-</nav>
+    <a href="dashboard.html?v=20" class="item">
+        <span class="material-icons">dashboard</span> Dashboard
+    </a>
 
+    <a href="estoque.html?v=20" class="item">
+        <span class="material-icons">inventory_2</span> Estoque
+    </a>
+
+    <a href="pedidos.html?v=20" class="item">
+        <span class="material-icons">shopping_cart</span> Pedidos
+    </a>
+
+    <a href="producao.html?v=20" class="item">
+        <span class="material-icons">factory</span> Produção
+    </a>
+
+    <a href="financeiro.html?v=20" class="item">
+        <span class="material-icons">attach_money</span> Financeiro
+    </a>
+
+    <a href="catalogo.html?v=20" class="item">
+        <span class="material-icons">storefront</span> Catálogo Público
+    </a>
+
+    <a href="index.html?v=20" class="item logout">
+        <span class="material-icons">logout</span> Sair
+    </a>
+</div>
+
+<div class="content">
+    <h1>Dashboard</h1>
+
+    <div class="cards">
+        <div class="card">
+            <span class="material-icons icon">inventory_2</span>
+            <h3>Estoque</h3>
+            <p>Gerencie ingredientes e produtos.</p>
+        </div>
+
+        <div class="card">
+            <span class="material-icons icon">shopping_cart</span>
+            <h3>Pedidos</h3>
+            <p>Acompanhe pedidos e entregas.</p>
+        </div>
+
+        <div class="card">
+            <span class="material-icons icon">factory</span>
+            <h3>Produção</h3>
+            <p>Controle a produção diária.</p>
+        </div>
+
+        <div class="card">
+            <span class="material-icons icon">attach_money</span>
+            <h3>Financeiro</h3>
+            <p>Relatórios e movimentações.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-<script src="firebase.js?v=1"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<script src="firebase.js?v=20"></script>
 
 <script>
 auth.onAuthStateChanged(user => {
     if (!user) {
-        console.log("Não logado, voltando para index");
-        window.location.href = "index.html?v=1";
-    } else {
-        console.log("Usuário logado:", user.email);
+        window.location.href = "index.html?v=20";
     }
 });
 </script>
