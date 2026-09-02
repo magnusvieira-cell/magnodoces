@@ -1,26 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Produção</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h2>Produção</h2>
+
+<ul id="lista"></ul>
+
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 <script src="firebase.js"></script>
 
 <script>
 db.collection("pedidos").where("status", "==", "novo").get().then(snapshot => {
-    const lista = document.getElementById("listaProducao");
+    const lista = document.getElementById("lista");
 
     snapshot.forEach(doc => {
         const p = doc.data();
         lista.innerHTML += `
-            <div class="producao-card">
-                <h4>${p.cliente}</h4>
-                <p>${p.produto} — ${p.quantidade}</p>
+            <li>
+                ${p.cliente} — ${p.produto} (${p.quantidade})
                 <button onclick="finalizar('${doc.id}')">Finalizar</button>
-            </div>
-        `;
+            </li>`;
     });
 });
 
 function finalizar(id) {
-    db.collection("pedidos").doc(id).update({
-        status: "finalizado"
-    }).then(() => location.reload());
+    db.collection("pedidos").doc(id).update({ status: "finalizado" })
+        .then(() => location.reload());
 }
 </script>
+
+</body>
+</html>
