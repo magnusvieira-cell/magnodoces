@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Pedidos • MagnoDoces</title>
-<link rel="stylesheet" href="style.css?v=20">
+<link rel="stylesheet" href="style.css?v=80">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
@@ -12,67 +12,79 @@
 <div class="sidebar">
     <h2 class="logo">MagnoDoces</h2>
 
-    <a href="dashboard.html?v=20" class="item"><span class="material-icons">dashboard</span> Dashboard</a>
-    <a href="estoque.html?v=20" class="item"><span class="material-icons">inventory_2</span> Estoque</a>
-    <a href="pedidos.html?v=20" class="item"><span class="material-icons">shopping_cart</span> Pedidos</a>
-    <a href="producao.html?v=20" class="item"><span class="material-icons">factory</span> Produção</a>
-    <a href="financeiro.html?v=20" class="item"><span class="material-icons">attach_money</span> Financeiro</a>
-    <a href="catalogo.html?v=20" class="item"><span class="material-icons">storefront</span> Catálogo</a>
-    <a href="index.html?v=20" class="item logout"><span class="material-icons">logout</span> Sair</a>
+    <a href="dashboard.html?v=80" class="item"><span class="material-icons">dashboard</span> Dashboard</a>
+    <a href="estoque.html?v=80" class="item"><span class="material-icons">inventory_2</span> Estoque</a>
+    <a href="ingrediente-novo.html?v=80" class="item"><span class="material-icons">add</span> Novo Ingrediente</a>
+    <a href="produtos-finais.html?v=80" class="item"><span class="material-icons">cake</span> Produtos Finais</a>
+    <a href="produto-final-novo.html?v=80" class="item"><span class="material-icons">add_circle</span> Novo Produto Final</a>
+    <a href="pedido-novo.html?v=80" class="item"><span class="material-icons">shopping_cart</span> Novo Pedido</a>
+    <a href="pedidos.html?v=80" class="item"><span class="material-icons">list_alt</span> Pedidos</a>
+    <a href="producao.html?v=80" class="item"><span class="material-icons">factory</span> Produção</a>
+    <a href="financeiro.html?v=80" class="item"><span class="material-icons">attach_money</span> Financeiro</a>
+    <a href="catalogo.html?v=80" class="item"><span class="material-icons">storefront</span> Catálogo</a>
+    <a href="index.html?v=80" class="item logout"><span class="material-icons">logout</span> Sair</a>
 </div>
 
 <div class="content">
     <h1>Pedidos</h1>
 
-    <button onclick="window.location.href='pedido-novo.html?v=20'">Novo Pedido</button>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Cliente</th>
-                <th>Data</th>
-                <th>Status</th>
-                <th>Total</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody id="listaPedidos"></tbody>
-    </table>
+    <div id="listaPedidos" class="cards"></div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-<script src="firebase.js?v=20"></script>
+<script src="firebase.js?v=80"></script>
 
 <script>
 auth.onAuthStateChanged(user => {
-    if (!user) window.location.href = "index.html?v=20";
+    if (!user) window.location.href = "index.html?v=80";
 });
 
-db.collection("pedidos").onSnapshot(snapshot => {
-    const lista = document.getElementById("listaPedidos");
-    lista.innerHTML = "";
+db.collection("pedidos").orderBy("data", "desc").onSnapshot(snapshot => {
+    const area = document.getElementById("listaPedidos");
+    area.innerHTML = "";
 
     snapshot.forEach(doc => {
         const p = doc.data();
-        lista.innerHTML += `
-            <tr>
-                <td>${p.cliente}</td>
-                <td>${p.data}</td>
-                <td>${p.status}</td>
-                <td>R$ ${p.total.toFixed(2)}</td>
-                <td>
-                    <button onclick="ver('${doc.id}')">Ver</button>
-                    <button onclick="remover('${doc.id}')">Excluir</button>
-                </td>
-            </tr>
+
+        area.innerHTML += `
+            <div class="card">
+                <h3>${p.cliente}</h3>
+                <p><b>Data:</b> ${p.data}</p>
+                <p><b>Total:</b> R$ ${p.total.toFixed(2)}</p>
+                <p><b>Custo:</b> R$ ${p.custo.toFixed(2)}</p>
+                <p><b>Lucro:</b> R$ ${p.lucro.toFixed(2)}</p>
+                <p><b>Status:</b> ${p.status}</p>
+
+                <button onclick="produzir('${doc.id}')">
+                    <span class="material-icons">factory</span> Produzir
+                </button>
+
+                <button onclick="alterarStatus('${doc.id}')">
+                    <span class="material-icons">sync</span> Alterar Status
+                </button>
+
+                <button onclick="remover('${doc.id}')">
+                    <span class="material-icons">delete</span> Excluir
+                </button>
+            </div>
         `;
     });
 });
 
-function ver(id) {
-    window.location.href = "pedido.html?id=" + id;
+function produzir(id) {
+    window.location.href = "producao.html?pedido=" + id;
+}
+
+function alterarStatus(id) {
+    const novo = prompt("Novo status: novo / produção / pronto / entregue");
+
+    if (!novo) return;
+
+    db.collection("pedidos").doc(id).update({
+        status: novo
+    });
 }
 
 function remover(id) {
