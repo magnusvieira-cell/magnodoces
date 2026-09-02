@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Novo Produto Final • MagnoDoces</title>
+<link rel="stylesheet" href="style.css?v=40">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<body>
+
+<div class="sidebar">
+    <h2 class="logo">MagnoDoces</h2>
+
+    <a href="dashboard.html?v=40" class="item"><span class="material-icons">dashboard</span> Dashboard</a>
+    <a href="estoque.html?v=40" class="item"><span class="material-icons">inventory_2</span> Estoque</a>
+    <a href="pedidos.html?v=40" class="item"><span class="material-icons">shopping_cart</span> Pedidos</a>
+    <a href="producao.html?v=40" class="item"><span class="material-icons">factory</span> Produção</a>
+    <a href="financeiro.html?v=40" class="item"><span class="material-icons">attach_money</span> Financeiro</a>
+    <a href="catalogo.html?v=40" class="item"><span class="material-icons">storefront</span> Catálogo</a>
+    <a href="produto-final-novo.html?v=40" class="item"><span class="material-icons">cake</span> Produtos Finais</a>
+    <a href="index.html?v=40" class="item logout"><span class="material-icons">logout</span> Sair</a>
+</div>
+
+<div class="content">
+    <h1>Novo Produto Final</h1>
+
+    <div class="card">
+        <h3>Informações do Produto</h3>
+
+        <input id="nome" placeholder="Nome do produto">
+        <input id="categoria" placeholder="Categoria (bolo, doce, combo...)">
+        <input id="preco" type="number" placeholder="Preço de venda">
+        <input id="imagem" placeholder="URL da imagem">
+        <textarea id="descricao" placeholder="Descrição" style="width:100%; height:80px;"></textarea>
+    </div>
+
+    <div class="card">
+        <h3>Ingredientes</h3>
+
+        <div style="display:flex; gap:10px;">
+            <select id="ingrediente"></select>
+            <input id="quantidade" type="number" placeholder="Quantidade usada">
+            <button onclick="addIngrediente()">Adicionar</button>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Ingrediente</th>
+                    <th>Quantidade</th>
+                    <th>Custo</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="listaIngredientes"></tbody>
+        </table>
+
+        <h3>Custo Total: R$ <span id="custoTotal">0.00</span></h3>
+        <h3>Lucro Estimado: R$ <span id="lucroEstimado">0.00</span></h3>
+    </div>
+
+    <button onclick="salvarProduto()">Salvar Produto</button>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<script src="firebase.js?v=40"></script>
+
+<script>
+auth.onAuthStateChanged(user => {
+    if (!user) window.location.href = "index.html?v=40";
+});
+
+let ingredientes = [];
+let lista = [];
+
+db.collection("estoque").get().then(snapshot => {
+    const sel = document.getElementById("ingrediente");
+    snapshot.forEach(doc => {
+        const item = doc.data();
+        ingredientes.push({ id: doc.id, ...item });
+        sel.innerHTML += `<option value="${doc.id}">${item.nome}</option>`;
+    });
+});
+
+function addIngrediente() {
+    const id = document.getElementById("ingrediente").value;
+    const qtd = Number(document.getElementById("quantidade").value);
+
+    const ing = ingredientes.find(i => i.id === id);
+    const custo = (ing.custo || 0) * qtd;
+
+    lista.push({ id, nome: ing.nome, qtd, custo });
+
+    renderIngredientes();
+}
+
+function renderIngredientes() {
+    const tbody = document.getElementById("listaIngredientes");
+    tbody.innerHTML = "";
+
+    let total = 0;
+
+    lista.forEach((i, index) => {
+        total += i.custo;
+
+        tbody.innerHTML += `
+            <tr>
+                <td>${i.nome}</td>
+                <td>${i.qtd}</td>
+                <td>R$ ${i.custo.toFixed(2)}</td>
+                <td><button onclick="remover(${index})"><span class="material-icons">delete</span></button></td>
+            </tr>
+        `;
+    });
+
+    document.getElementById("custoTotal").innerText = total.toFixed(2);
+
+    const preco = Number(document.getElementById("preco").value || 0);
+    document.getElementById("lucroEstimado").innerText = (preco - total).toFixed(2);
+}
+
+function remover(index) {
+    lista.splice(index, 1);
+    renderIngredientes();
+}
+
+function salvarProduto() {
+    const nome = document.getElementById("nome").value;
+    const categoria = document.getElementById("categoria").value;
+    const preco = Number(document.getElementById("preco").value);
+    const imagem = document.getElementById("imagem").value;
+    const descricao = document.getElementById("descricao").value;
+
+    const custoTotal = Number(document.getElementById("custoTotal").innerText);
+    const lucro = Number(document.getElementById("lucroEstimado").innerText);
+
+    db.collection("produtosFinais").add({
+        nome, categoria, preco, imagem, descricao,
+        ingredientes: lista,
+        custoTotal,
+        lucro
+    }).then(() => {
+        alert("Produto cadastrado com sucesso!");
+        window.location.href = "catalogo.html?v=40";
+    });
+}
+</script>
+
+</body>
+</html>
